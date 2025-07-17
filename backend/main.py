@@ -2,8 +2,18 @@
 from fastapi import FastAPI
 from database import database
 from routers import user  # ← user.py는 routers/ 폴더 안에 있어야 함
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 개발 중에는 * (모든 도메인) 허용, 배포 시엔 도메인을 지정하는 게 좋음
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup():
