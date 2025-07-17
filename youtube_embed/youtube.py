@@ -8,7 +8,7 @@ import re
 
 
 load_dotenv() # .env 파일 내용을 환경변수로 불러오기
-youtube_api_key = os.getenv("YOUTUBE_API_KEY")
+youtube_api_key = os.getenv("YOUTUBE_API_KEY", "AIzaSyDZ9hD0Z4Fs0fnYfLGFLtbsDbuQRdmL4bk")
 
 app = Flask(__name__)
 
