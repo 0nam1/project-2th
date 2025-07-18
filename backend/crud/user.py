@@ -31,3 +31,12 @@ async def verify_user(user_id: str) -> bool:
     query = "SELECT user_id FROM users WHERE user_id = :user_id"
     result = await database.fetch_one(query=query, values={"user_id": user_id})
     return result is not None
+
+async def get_user_by_id(user_id: str) -> dict | None:
+    query = """
+        SELECT user_id, gender, age, height, weight, level, injury_level, injury_part
+        FROM users
+        WHERE user_id = :user_id
+    """
+    result = await database.fetch_one(query=query, values={"user_id": user_id})
+    return dict(result) if result else None

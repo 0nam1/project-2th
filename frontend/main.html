@@ -15,11 +15,33 @@
 
   <h2>Chat Gym PT</h2>
 
-  <div id="chat-box"></div>
+  <!-- 채팅창 + 이미지 미리보기 영역 -->
+  <div id="chat-wrapper">
+    <div id="chat-box"></div>
+    <div id="imagePreviewWrapper" class="hidden">
+      <img id="previewImage" src="" alt="미리보기 이미지" />
+    </div>
+  </div>
 
-  <div id="input-box">
+  <!-- 입력 영역 -->
+  <div id="input-area">
     <input type="text" id="userInput" placeholder="메시지를 입력하세요..." />
+
+    <!-- 클립 아이콘 -->
+    <label for="imageInput" id="clipLabel">📎</label>
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+
+    <!-- 보내기 버튼 -->
     <button id="sendBtn">보내기</button>
+  </div>
+
+  <!-- 모달 팝업 -->
+  <div id="profileModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>👤 내 정보</h3>
+      <div id="profileDetails"></div>
+    </div>
   </div>
 
   <script src="js/main.js"></script>
