@@ -16,9 +16,16 @@ import json
 
 load_dotenv() # .env 파일 내용을 환경변수로 불러오기
 youtube_api_key = os.getenv("YOUTUBE_API_KEY")
+stt_endpoint = os.getenv("STT_ENDPOINT")
+stt_key = os.getenv("STT_SUBSCRIPTION_KEY")
+tts_endpoint = os.getenv("TTS_ENDPOINT")
+tts_key = os.getenv("TTS_SUBSCRIPTION_KEY")
+gpt_endpoint = os.getenv("GPT_ENDPOINT")
+gpt_key = os.getenv("GPT_SUBSCRIPTION_KEY")
 
 # app = Flask(__name__)		# Flask 사용 시
 app = FastAPI()				# FastAPI 사용 시
+
 
 def search_youtube_videos(query, max_result = 3):	# 결과값 3개 출력
 	search_query = re.sub(r"영상 찾아줘|찾아줘", "", query).strip() 	# "영상 찾아줘, 찾아줘" 를 제외한 나머지 만 사용
@@ -99,9 +106,9 @@ def extract_audio(video_url, output_format = "mp3"):
 
 # STT 요청
 def request_stt(audio_path):
-	endpoint = "https://ai-7ai0451144ai518166382125.cognitiveservices.azure.com/speechtotext/transcriptions:transcribe?api-version=2024-11-15"
+	endpoint = stt_endpoint
 	headers = {
-		"Ocp-Apim-Subscription-Key" : "BRmVMhcwHxk0u3pgZm2JKAY2PQVGX4lCKrRFk8wpXR2MgILYmEX2JQQJ99BGACHYHv6XJ3w3AAAAACOGuXmK",
+		"Ocp-Apim-Subscription-Key" : stt_key,
 		"Accept" : "application/json"
 	}
 	definition_obj = {
@@ -128,11 +135,12 @@ def request_stt(audio_path):
 			print(f"STT 응답 파싱 오류 : {e}")
 			return ""
 
+
 # TTS api-key, endpoint 수정완료. but not tested
 def request_tts(text, voice = "ko-KR-SunHiNeural"):
-	endpoint = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1"
+	endpoint = tts_endpoint
 	headers = {
-		"Ocp-Apim-Subscription-Key": "6PPozaU0ntCdmYsFCQWETpriXkMyhbZG3HSNaQZbUnYooZkgRVEFJQQJ99BGACYeBjFXJ3w3AAAYACOG3Th1",
+		"Ocp-Apim-Subscription-Key": tts_key,
 		"X-Microsoft-OutputFormat" : "riff-8khz-16bit-mono-pcm",
 		"Content-Type" : "application/ssml+xml"
 	}
@@ -163,9 +171,9 @@ def request_tts(text, voice = "ko-KR-SunHiNeural"):
 
 # GPT 요약
 def request_gpt(text):
-	endpoint = "https://7ai-team3-openai.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview"
+	endpoint = gpt_endpoint
 	headers = {
-		"api-key": "5CpH2zbZhqXguJMMUC67YhtwWFBobt5HHOk4exzqnplefSm28AKcJQQJ99BGACHYHv6XJ3w3AAABACOGYck1",
+		"api-key": gpt_key,
 		"Content-Type":"application/json"
 	}
 	body = {
@@ -205,6 +213,9 @@ def generate_video_summary(video_url):
 		# 2. STT 변환
 		transcript = request_stt(audio_path)
 		if not transcript or not transcript.strip():
+			# 음성이 없을 때도 임시 오디오 파일 삭제
+			if audio_path and os.path.exists(audio_path):
+				os.remove(audio_path)
 			return "음성이 제공되지 않은 영상입니다."
 
 		# 3. GPT 요약

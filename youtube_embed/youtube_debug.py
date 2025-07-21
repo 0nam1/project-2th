@@ -10,21 +10,30 @@ import requests
 import uuid
 import json
 
-load_dotenv()
+load_dotenv()   # .env 파일 내용을 환경변수로 불러오기
 youtube_api_key = os.getenv("YOUTUBE_API_KEY")
+stt_endpoint = os.getenv("STT_ENDPOINT")
+stt_key = os.getenv("STT_SUBSCRIPTION_KEY")
+tts_endpoint = os.getenv("TTS_ENDPOINT")
+tts_key = os.getenv("TTS_SUBSCRIPTION_KEY")
+gpt_endpoint = os.getenv("GPT_ENDPOINT")
+gpt_key = os.getenv("GPT_SUBSCRIPTION_KEY")
 
-app = FastAPI()
+# app = Flask(__name__)		# Flask 사용 시
+app = FastAPI()				# FastAPI 사용 시
+
 
 def search_youtube_videos(query, max_result=3):
     print(f"\n[search_youtube_videos] 시작: {query}")
-    search_query = re.sub(r"영상 찾아줘|찾아줘", "", query).strip()
+    search_query = re.sub(r"영상 찾아줘|찾아줘", "", query).strip() 	# "영상 찾아줘, 찾아줘" 를 제외한 나머지 만 사용
+
     try:
         youtube = build('youtube', 'v3', developerKey=youtube_api_key)
         request = youtube.search().list(
             q=search_query,
             part='snippet',
             type='video',
-            maxResults=max_result * 2,
+            maxResults=max_result * 2,		# 임베드 제한 영상 걸러내게 2배수
             order='relevance',
             regionCode='KR'
         )
@@ -63,6 +72,7 @@ def search_youtube_videos(query, max_result=3):
         print(f"[search_youtube_videos] 예외: {e}")
         return {"success": False, "html_list": [f"<div>오류 : {str(e)}</div>"], "video_ids": []}
 
+
 def extract_audio(video_url, output_format="mp3"):
     print(f"[extract_audio] 오디오 추출 시작: {video_url}")
     try:
@@ -88,11 +98,13 @@ def extract_audio(video_url, output_format="mp3"):
         print(f"[extract_audio] 예외: {e}")
         return None
 
+
+# STT 요청
 def request_stt(audio_path):
     print(f"[request_stt] STT 변환 요청: {audio_path}")
-    endpoint = "https://ai-7ai0451144ai518166382125.cognitiveservices.azure.com/speechtotext/transcriptions:transcribe?api-version=2024-11-15"
+    endpoint = stt_endpoint
     headers = {
-        "Ocp-Apim-Subscription-Key": "BRmVMhcwHxk0u3pgZm2JKAY2PQVGX4lCKrRFk8wpXR2MgILYmEX2JQQJ99BGACHYHv6XJ3w3AAAAACOGuXmK",
+        "Ocp-Apim-Subscription-Key" : stt_key,
         "Accept" : "application/json"
     }
     definition_obj = {
@@ -124,14 +136,49 @@ def request_stt(audio_path):
             print(f"[request_stt] 예외: {e}")
             return ""
 
+
+# TTS api-key, endpoint 수정완료. but not tested
+def request_tts(text, voice = "ko-KR-SunHiNeural"):
+	endpoint = tts_endpoint
+	headers = {
+		"Ocp-Apim-Subscription-Key": tts_key,
+		"X-Microsoft-OutputFormat" : "riff-8khz-16bit-mono-pcm",
+		"Content-Type" : "application/ssml+xml"
+	}
+
+	body = f"""
+		<speak version='1.0' xml:lang='en-US'>
+			<voice xml:lang='ko-KR' xml:gender='Female' name='ko-KR-SunHiNeural'>
+				{text}
+			</voice>
+		</speak>
+	"""
+	response = requests.post(endpoint, headers = headers, data = body)
+
+	if response.status_code != 200:
+		print(f"Error : {response.status_code}")
+		return None
+	
+	import datetime
+	now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+	filename = f"tts_result_{now}.wav"
+
+	with open(filename, "wb") as audio_file:
+		audio_file.write(response.content)
+
+	return filename
+
+
+# GPT 요약
 def request_gpt(text):
     print(f"[request_gpt] 요약 요청 (길이: {len(text)})")
     if not text or not text.strip():
         print("[request_gpt] 입력 없음 → 음성 미제공")
         return "음성이 제공되지 않은 영상입니다."
-    endpoint = "https://7ai-team3-openai.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview"
+    endpoint = gpt_endpoint
     headers = {
-        "api-key": "5CpH2zbZhqXguJMMUC67YhtwWFBobt5HHOk4exzqnplefSm28AKcJQQJ99BGACHYHv6XJ3w3AAABACOGYck1",
+        "api-key": gpt_key,
         "Content-Type":"application/json"
     }
     body = {
@@ -159,25 +206,33 @@ def request_gpt(text):
     print(f"[request_gpt] 요약 결과: {content[:50]} ...")
     return content
 
+# 전체 요약 작성 함수
 def generate_video_summary(video_url):
     print(f"\n[generate_video_summary] === {video_url} === 요약 시작 ===")
     try:
+        # 1. 오디오 추출
         print("[generate_video_summary] 1. 오디오 추출")
         audio_path = extract_audio(video_url)
         if not audio_path:
             print("[generate_video_summary] 오디오 추출 실패")
             return "오디오 추출 실패"
 
+        # 2. STT 변환
         print("[generate_video_summary] 2. STT 변환")
         transcript = request_stt(audio_path)
         if not transcript or not transcript.strip():
             print("[generate_video_summary] STT 결과 없음 → 무음 영상")
+            # 음성이 없을 때도 임시 오디오 파일 삭제
+            if audio_path and os.path.exists(audio_path):
+                os.remove(audio_path)
             return "음성이 제공되지 않은 영상입니다."
 
+        # 3. GPT 요약
         print("[generate_video_summary] 3. GPT 요약")
         prompt = f"다음 내용을 3-5줄로 요약해주세요:\n{transcript}"
         summary = request_gpt(prompt)
 
+		# 4. 임시 파일 정리
         print("[generate_video_summary] 4. 임시 파일 삭제")
         if os.path.exists(audio_path):
             os.remove(audio_path)
@@ -189,6 +244,8 @@ def generate_video_summary(video_url):
         print(f"[generate_video_summary] 예외: {e}")
         return f"요약 생성 실패: {str(e)}"
 
+
+# FastAPI용
 @app.post("/youtube_embed")
 async def youtube_embed(request : Request):
     data = await request.json()
@@ -200,6 +257,7 @@ async def youtube_embed(request : Request):
         print("[/youtube_embed] 검색 실패/결과 없음")
         return JSONResponse(content = search_result)
     
+    # 각 영상별로 요약  넣기
     video_ids = search_result["video_ids"]
     html_list = search_result["html_list"]
     results = []
@@ -216,6 +274,7 @@ async def youtube_embed(request : Request):
         "success" : True,
         "results" : results
     })
+
 
 @app.post("/youtube_summary")
 async def youtube_summary(request: Request):
