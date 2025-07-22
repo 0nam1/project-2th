@@ -24,16 +24,18 @@
   </div>
 
   <!-- 입력 영역 -->
-  <div id="input-area">
-    <input type="text" id="userInput" placeholder="메시지를 입력하세요..." />
+  <form id="chat-form">
+    <div id="input-area">
+      <input type="text" id="userInput" placeholder="메시지를 입력하세요..." />
 
-    <!-- 클립 아이콘 -->
-    <label for="imageInput" id="clipLabel">📎</label>
-    <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+      <!-- 클립 아이콘 -->
+      <label for="imageInput" id="clipLabel">📎</label>
+      <input type="file" id="imageInput" accept="image/*" style="display: none;" />
 
-    <!-- 보내기 버튼 -->
-    <button id="sendBtn">보내기</button>
-  </div>
+      <!-- 보내기 버튼 -->
+      <button type="submit" id="sendBtn">보내기</button>
+    </div>
+  </form>
 
   <!-- 모달 팝업 -->
   <div id="profileModal" class="modal hidden">

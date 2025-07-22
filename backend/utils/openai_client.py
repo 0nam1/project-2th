@@ -1,11 +1,11 @@
 # utils/openai_client.py
 
 import os
-from openai import AzureOpenAI
+from openai import AsyncAzureOpenAI
 from dotenv import load_dotenv
 import base64
 from fastapi import UploadFile
-from utils.ocr import extract_text_from_uploadfile
+from utils.ocr import extract_text_from_bytes
 from typing import List, Dict
 
 load_dotenv()
@@ -23,28 +23,28 @@ EMBEDDING_API_VERSION = os.getenv("AZURE_OPENAI_EMBEDDING_API_VERSION")
 EMBEDDING_DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME")
 
 # Chat Client Initialization
-chat_client = AzureOpenAI(
+chat_client = AsyncAzureOpenAI(
     api_key=OPENAI_API_KEY,
     azure_endpoint=OPENAI_ENDPOINT,
     api_version=CHAT_API_VERSION
 )
 
 # Embedding Client Initialization
-embedding_client = AzureOpenAI(
+embedding_client = AsyncAzureOpenAI(
     api_key=OPENAI_API_KEY,
     azure_endpoint=OPENAI_ENDPOINT,
     api_version=EMBEDDING_API_VERSION
 )
 
 async def get_embedding(text: str) -> list[float]:
-    response = embedding_client.embeddings.create(input=text, model=EMBEDDING_DEPLOYMENT_NAME)
+    response = await embedding_client.embeddings.create(input=text, model=EMBEDDING_DEPLOYMENT_NAME)
     return response.data[0].embedding
 
 async def should_search_long_term_memory(question: str, history: List[Dict]) -> bool:
     history_str = "\n".join([f"{msg['role']}: {msg['content']}" for msg in history]) if history else "None"
 
     try:
-        response = chat_client.chat.completions.create(
+        response = await chat_client.chat.completions.create(
             model=CHAT_DEPLOYMENT_NAME,
             messages=[
                 {
@@ -65,7 +65,7 @@ async def should_search_long_term_memory(question: str, history: List[Dict]) -> 
         print(f"장기 기억 검색 여부 판단 오류: {e}")
         return True
 
-async def ask_openai_unified(user_message: str, image: UploadFile | None = None, recent_history: List[Dict] = [], rag_history: List[Dict] = []) -> str:
+async def ask_openai_unified(user_message: str, image_bytes: bytes | None = None, recent_history: List[Dict] = [], rag_history: List[Dict] = []) -> str:
     """단기 기억(recent_history)과 장기 기억(rag_history)을 모두 활용하여 답변을 생성합니다."""
     system_prompt = "너는 Gym PT를 도와주는 AI 챗봇이야. 사용자가 인바디 이미지를 업로드할 수 있으며, OCR 텍스트를 참고해서 정확한 분석을 제공해줘. [과거 검색 기록]이 주어질 경우, 날짜 정보를 참고하여 사용자의 질문에 답변해줘. 단, 답변을 생성할 때는 [YYYY-MM-DD]와 같은 대괄호 형식으로 날짜를 절대 포함하지 마."
     messages = [{"role": "system", "content": system_prompt}]
@@ -83,17 +83,16 @@ async def ask_openai_unified(user_message: str, image: UploadFile | None = None,
     if user_message:
         user_content_list.append({"type": "text", "text": user_message})
 
-    if image:
+    if image_bytes:
+
         # 1. Azure OCR로 이미지에서 텍스트 추출
-        ocr_text = await extract_text_from_uploadfile(image)
+        ocr_text = await extract_text_from_bytes(image_bytes)
         if ocr_text:
             ocr_context = f"[Image OCR Result]\n{ocr_text}"
             print(f"--- OCR Result Sent to GPT ---\n{ocr_context}\n------------------------------")
             user_content_list.append({"type": "text", "text": ocr_context})
         
         # 2. 이미지를 Base64로 인코딩하여 AI에게 전달 (Vision 기능)
-        await image.seek(0) # OCR 처리 후 파일 포인터를 처음으로 되돌림
-        image_bytes = await image.read()
         base64_image = base64.b64encode(image_bytes).decode("utf-8")
         user_content_list.append({
             "type": "image_url",
@@ -104,14 +103,11 @@ async def ask_openai_unified(user_message: str, image: UploadFile | None = None,
 
     messages.append({"role": "user", "content": user_content_list})
 
-    try:
-        response = chat_client.chat.completions.create(
-            model=CHAT_DEPLOYMENT_NAME,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1200
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"Azure OpenAI 호출 오류: {e}")
-        raise
+    response = await chat_client.chat.completions.create(
+        model=CHAT_DEPLOYMENT_NAME,
+        messages=messages,
+        temperature=0.7,
+        max_tokens=1200,
+        stream=True
+    )
+    return response

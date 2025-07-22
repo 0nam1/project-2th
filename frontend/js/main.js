@@ -9,21 +9,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatBox = document.getElementById("chat-box");
   const userInput = document.getElementById("userInput");
-  const sendBtn = document.getElementById("sendBtn");
   const imageInput = document.getElementById("imageInput");
   const previewWrapper = document.getElementById("imagePreviewWrapper");
   const previewImage = document.getElementById("previewImage");
+  const chatForm = document.getElementById("chat-form");
 
   const profileBtn = document.getElementById("profileBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const modal = document.getElementById("profileModal");
   const profileDetails = document.getElementById("profileDetails");
   const closeModalBtn = document.querySelector(".close");
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "index.html";
-  });
 
   function appendMessage(sender, text) {
     const msg = document.createElement("div");
@@ -33,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // ✅ 이미지 선택 시 미리보기 표시
   imageInput.addEventListener("change", () => {
     const file = imageInput.files[0];
     if (file) {
@@ -49,8 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ✅ 메시지 전송 (텍스트 + 이미지)
-  sendBtn.addEventListener("click", async () => {
+  async function sendMessage(event) {
+    event.preventDefault();
+
     const message = userInput.value.trim();
     const file = imageInput.files[0];
     if (!message && !file) return;
@@ -62,6 +57,18 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("message", message);
     if (file) formData.append("image", file);
 
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.className = "message bot";
+    chatBox.appendChild(botMessageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // YouTube 영상을 표시할 컨테이너 추가
+    const youtubeVideosContainer = document.createElement("div");
+    youtubeVideosContainer.className = "youtube-videos-container";
+    chatBox.appendChild(youtubeVideosContainer); // 챗봇 메시지 아래에 추가
+
+    let fullStreamBuffer = ""; // 전체 스트림 데이터를 저장할 버퍼
+
     try {
       const res = await fetch("http://localhost:8000/chat/image", {
         method: "POST",
@@ -70,23 +77,72 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        appendMessage("bot", data.response);
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          let chunk = decoder.decode(value, { stream: true });
+          botMessageDiv.innerText += chunk;
+          fullStreamBuffer += chunk; // 모든 청크를 버퍼에 추가
+          chatBox.scrollTop = chatBox.scrollHeight;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // 스트리밍 완료 후 YouTube 검색
+        try {
+            const youtubeSearchRes = await fetch(`http://localhost:8000/youtube_search?query=${encodeURIComponent(fullStreamBuffer)}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (youtubeSearchRes.ok) {
+                const videoData = await youtubeSearchRes.json();
+                if (videoData && videoData.length > 0) {
+                    videoData.forEach(video => {
+                        const iframe = document.createElement("iframe");
+                        iframe.width = "100%";
+                        iframe.height = "200"; // 적절한 높이 설정
+                        iframe.src = `https://www.youtube.com/embed/${video.id}`;
+                        iframe.frameBorder = "0";
+                        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                        iframe.allowFullscreen = true;
+                        youtubeVideosContainer.appendChild(iframe);
+
+                        const videoTitle = document.createElement("p");
+                        videoTitle.innerText = video.title;
+                        videoTitle.style.fontSize = "0.9em";
+                        videoTitle.style.marginTop = "5px";
+                        videoTitle.style.marginBottom = "15px";
+                        youtubeVideosContainer.appendChild(videoTitle);
+                    });
+                }
+            } else {
+                console.error("Failed to fetch YouTube videos:", youtubeSearchRes.status, youtubeSearchRes.statusText);
+            }
+        } catch (youtubeErr) {
+            console.error("Error fetching YouTube videos:", youtubeErr);
+        }
       } else {
-        appendMessage("bot", "❗ 오류가 발생했습니다.");
+        botMessageDiv.innerText = "❗ 오류가 발생했습니다.";
       }
     } catch (err) {
-      appendMessage("bot", "❗ 네트워크 오류입니다.");
+      botMessageDiv.innerText = "❗ 네트워크 오류입니다.";
       console.error(err);
     }
 
-    // ✅ 전송 후 초기화
     imageInput.value = "";
     previewImage.src = "";
     previewWrapper.classList.remove("show");
+  }
+
+  chatForm.addEventListener("submit", sendMessage);
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "index.html";
   });
 
-  // 내 정보 보기 모달 로직 (생략 없이 유지)
   profileBtn.addEventListener("click", async () => {
     try {
       const res = await fetch("http://localhost:8000/protected/me", {

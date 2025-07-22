@@ -18,12 +18,10 @@ client = ImageAnalysisClient(
 )
 
 # 🔧 비동기 함수로 변경
-async def extract_text_from_uploadfile(image: UploadFile) -> str:
-    # 이미지 내용을 비동기 방식으로 읽고 임시파일에 저장
-    contents = await image.read()
-
+async def extract_text_from_bytes(image_bytes: bytes) -> str:
+    # 전달받은 바이트를 임시파일에 저장
     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
-        tmp.write(contents)
+        tmp.write(image_bytes)
         tmp_path = tmp.name
 
     try:
