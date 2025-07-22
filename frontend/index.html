@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Gym PT - 로그인</title>
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="icon" href="res/G.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Chat Gym PT</div>
+    
+    <form id="login-form">
+      <input type="text" id="user_id" name="user_id" placeholder="아이디 입력">
+      <div class="warning">띄어쓰기를 입력하지 마세요.</div>
+      
+      <button type="submit" class="login-btn">로그인 하기</button>
+      <button type="button" class="signup-btn" onclick="location.href='signup.html'">가입하기</button>
+      <!-- 로그인 결과 메시지 표시 -->
+      <div id="login-message"></div>
+    </form>
+  </div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>

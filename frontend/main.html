@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat Gym PT - 챗봇</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="res/G.ico" type="image/x-icon">
+</head>
+<body>
+  <!-- 상단 버튼 영역 -->
+  <div class="top-bar">
+    <select id="modelSelector" style="margin-right: 10px; padding: 5px; border-radius: 5px;">
+      <option value="gpt-4o">GPT-4o (기본값)</option>
+      <option value="llama3.2:1b">Llama 3.2 (로컬)</option>
+    </select>
+    <button id="profileBtn">내 정보 보기</button>
+    <button id="logoutBtn">로그아웃</button>
+  </div>
+
+  <h2>Chat Gym PT</h2>
+
+  <!-- 채팅창 + 이미지 미리보기 영역 -->
+  <div id="chat-wrapper">
+    <div id="chat-box"></div>
+    <div id="imagePreviewWrapper" class="hidden">
+      <img id="previewImage" src="" alt="미리보기 이미지" />
+    </div>
+  </div>
+
+  <!-- 입력 영역 -->
+  <form id="chat-form">
+    <div id="input-area">
+      <input type="text" id="userInput" placeholder="메시지를 입력하세요..." />
+
+      <!-- 클립 아이콘 -->
+      <label for="imageInput" id="clipLabel">📎</label>
+      <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+
+      <!-- 보내기 버튼 -->
+      <button type="submit" id="sendBtn">보내기</button>
+    </div>
+  </form>
+
+  <!-- 모달 팝업 -->
+  <div id="profileModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>👤 내 정보</h3>
+      <div id="profileDetails"></div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

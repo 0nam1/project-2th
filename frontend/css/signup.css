@@ -1,0 +1,84 @@
+body {
+    font-family: sans-serif;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.gender-options {
+    display: flex;
+    gap: 10px; /* 간격 좁힘 */
+    margin-top: 10px;
+}
+
+.gender-options label {
+    font-weight: normal;
+}
+
+input[type="radio"] {
+    accent-color: green;
+}
+
+.level-options {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.level-options label {
+    font-weight: normal;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.back-btn {
+    background-color: white;
+    color: green;
+    border: 1px solid green;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.submit-btn {
+    background-color: green;
+    color: white;
+    flex: 1;
+    margin-left: 10px;
+}
