@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileDetails = document.getElementById("profileDetails");
   const closeModalBtn = document.querySelector(".close");
 
+  const modelSelector = document.getElementById("modelSelector");
+
   function appendMessage(sender, text) {
     const msg = document.createElement("div");
     msg.className = `message ${sender}`;
@@ -57,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("message", message);
     if (file) formData.append("image", file);
 
+    const model = modelSelector.value;
+    formData.append("model", model);
+
     const botMessageDiv = document.createElement("div");
     botMessageDiv.className = "message bot";
     chatBox.appendChild(botMessageDiv);
@@ -84,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const { done, value } = await reader.read();
           if (done) break;
           let chunk = decoder.decode(value, { stream: true });
-          botMessageDiv.innerText += chunk;
+          botMessageDiv.textContent += chunk;
           fullStreamBuffer += chunk; // 모든 청크를 버퍼에 추가
           chatBox.scrollTop = chatBox.scrollHeight;
         chatBox.scrollTop = chatBox.scrollHeight;
