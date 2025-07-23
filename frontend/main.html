@@ -8,39 +8,53 @@
   <link rel="icon" href="res/G.ico" type="image/x-icon">
 </head>
 <body>
-  <!-- 상단 버튼 영역 -->
-  <div class="top-bar">
-    <select id="modelSelector" style="margin-right: 10px; padding: 5px; border-radius: 5px;">
-      <option value="gpt-4o">GPT-4o (기본값)</option>
-      <option value="llama3.2:1b">Llama 3.2 (로컬)</option>
+  <!-- 상단바 -->
+  <div class="top-bar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0;">
+    <button id="profileBtn" class="my-info-title" style="font-size:2rem; font-weight:700; margin-left:24px; background:none; border:none; cursor:pointer; padding:0;">내 정보 보기</button>
+    <select id="modelSelector" style="margin-right: 24px; padding: 6px 16px; border-radius: 8px; font-size:1rem;">
+      <option value="gpt-4o">GPT4o</option>
     </select>
-    <button id="profileBtn">내 정보 보기</button>
-    <button id="logoutBtn">로그아웃</button>
+    <!-- 로그아웃 버튼은 숨김 -->
   </div>
 
-  <h2>Chat Gym PT</h2>
-
-  <!-- 채팅창 + 이미지 미리보기 영역 -->
-  <div id="chat-wrapper">
-    <div id="chat-box"></div>
-    <div id="imagePreviewWrapper" class="hidden">
-      <img id="previewImage" src="" alt="미리보기 이미지" />
+  <!-- 안내문구(초기화면) -->
+  <div class="container" style="display:flex; flex-direction:column; align-items:center;">
+    <div id="welcome-message" style="text-align:center; margin-top:80px;">
+      <h1 style="font-size:2rem; font-weight:800; margin-top:200px; margin-bottom:16px;">인바디 보고서 올리면 운동을 알려드려요.</h1>
+      <h2 style="font-size:1.3rem; font-weight:700; color:#444; margin-bottom:48px;">운동관련 질문을 하면 답변해줘요.</h2>
+      <div style="margin-bottom:24px;">
+        <button class="suggest-btn" style="margin:0 8px 12px 0;">인바디 보고서 분석해줘.</button>
+        <button class="suggest-btn" style="margin:0 8px 12px 0;">오늘 운동 뭐하지?</button>
+      </div>
+      <!-- 입력 영역(초기화면에도 보여줌) -->
+      <form id="chat-form" style="margin-left:24px; margin-right:24px; max-width:calc(100% - 48px); width:100%;">
+        <div id="input-area" style="display:flex; align-items:center; background:#f5f6f7; border-radius:10px; border:1.5px solid #ddd; padding:8px 12px; width:100%;">
+          <input type="text" id="userInput" placeholder="여기에 질문을 입력하세요." style="flex:1; border:none; background:transparent; font-size:1.1rem; outline:none;" autocomplete="off" />
+          <label for="imageInput" id="clipLabel" style="font-size:1.5rem; cursor:pointer; margin:0 8px 0 8px;">📎</label>
+          <input type="file" id="imageInput" accept="image/*" style="display:none;" />
+          <!-- 전송 버튼: 아이콘으로 변경 -->
+          <button type="submit" id="sendBtn" aria-label="전송" style="background:none; border:none; cursor:pointer; padding:0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 21L21 12L3 3V10L17 12L3 14V21Z" fill="#008080"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+    <div id="chat-wrapper" style="display:none; flex-direction:column; align-items:center; width:100%;">
+      <div class="chat-bg-box" style="margin-left:24px; margin-right:24px; max-width:calc(100% - 48px);">
+        <div id="chat-box" style="overflow-y:auto; max-width:100%; margin:0 auto; height:100%;"></div>
+      </div>
+      <form id="chat-form-chat" style="margin-left:24px; margin-right:24px; max-width:calc(100% - 48px); width:100%; display:flex; justify-content:center;">
+        <div id="input-area-chat" style="display:flex; align-items:center; background:#f5f6f7; border-radius:10px; border:1.5px solid #ddd; padding:8px 12px; gap:8px; width:100%;">
+          <input type="text" id="userInputChat" placeholder="여기에 질문을 입력하세요." style="flex:1; border:none; background:transparent; font-size:1.1rem; outline:none;" autocomplete="off" />
+          <label for="imageInputChat" id="clipLabelChat" style="font-size:1.5rem; cursor:pointer; margin:0 8px 0 8px;">📎</label>
+          <input type="file" id="imageInputChat" accept="image/*" style="display:none;" />
+          <button type="submit" id="sendBtnChat" aria-label="전송" style="background:none; border:none; cursor:pointer; padding:0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M3 21L21 12L3 3V10L17 12L3 14V21Z" fill="#008080"/></svg>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-
-  <!-- 입력 영역 -->
-  <form id="chat-form">
-    <div id="input-area">
-      <input type="text" id="userInput" placeholder="메시지를 입력하세요..." />
-
-      <!-- 클립 아이콘 -->
-      <label for="imageInput" id="clipLabel">📎</label>
-      <input type="file" id="imageInput" accept="image/*" style="display: none;" />
-
-      <!-- 보내기 버튼 -->
-      <button type="submit" id="sendBtn">보내기</button>
-    </div>
-  </form>
 
   <!-- 모달 팝업 -->
   <div id="profileModal" class="modal hidden">
