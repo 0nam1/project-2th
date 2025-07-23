@@ -2,52 +2,88 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>회원 가입</title>
+  <title>가입하기</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/signup.css">
-  <link rel="icon" href="res/G.ico" type="image/x-icon">
 </head>
 <body>
-  <h2>회원 가입</h2>
+  <h2>가입하기</h2>
+  <div class="signup-desc">안녕하세요, ChatGymPT에 오신 걸 환영합니다!<br>가입은 1분도 걸리지 않아요.</div>
   <form id="signup-form">
-    <label for="user_id">아이디</label>
-    <input type="text" id="user_id" name="user_id" required />
+    <label for="user_id">아이디 <span class="required">(필수)</span></label>
+    <input type="text" id="user_id" name="user_id" required placeholder="아이디를 입력하세요." />
 
-    <label>성별 (필수)</label>
+    <label>성별 <span class="required">(필수)</span></label>
     <div class="gender-options">
-      <label><input type="radio" name="gender" value="남성" required checked/> 남성</label>
-      <label><input type="radio" name="gender" value="여성" required /> 여성</label>
+      <label><input type="radio" name="gender" value="남성" required checked/> 남자</label>
+      <label><input type="radio" name="gender" value="여성" required /> 여자</label>
     </div>
 
-    <label for="age">나이</label>
-    <input type="number" id="age" name="age" required min="1" />
+    <label for="age">나이 <span class="required">(필수)</span></label>
+    <input type="number" id="age" name="age" required min="1" placeholder="0" />
 
-    <label for="height">키 (cm)</label>
-    <input type="number" id="height" name="height" required min="1" />
+    <label for="height">키 <span class="required">(필수)</span></label>
+    <div class="input-row">
+      <input type="number" id="height" name="height" required min="1" placeholder="0" />
+      <span class="unit">cm</span>
+    </div>
 
-    <label for="weight">체중 (kg)</label>
-    <input type="number" id="weight" name="weight" required min="1" />
+    <label for="weight">체중 <span class="required">(필수)</span></label>
+    <div class="input-row">
+      <input type="number" id="weight" name="weight" required min="1" placeholder="0" />
+      <span class="unit">kg</span>
+    </div>
 
-    <label>운동 수준</label>
+    <label>운동 수준 <span class="required">(필수)</span></label>
     <div class="level-options">
-      <label><input type="radio" name="level" value="1" required checked/> 1 - 운동을 모른다. (운동 머신 기본 조작법 미숙)</label>
-      <label><input type="radio" name="level" value="2" required /> 2 - 입문자, 바른 자세를 모른다 (운동 머신 기본 조작법 능숙)</label>
-      <label><input type="radio" name="level" value="3" required /> 3 - 초보자, 머신으로 단순 반복 운동 가능</label>
-      <label><input type="radio" name="level" value="4" required /> 4 - 중급자, 머신으로 다양한 동작 수행 가능</label>
-      <label><input type="radio" name="level" value="5" required /> 5 - 전문가, 타인을 가르칠 수 있다.</label>
+      <label class="level-label">
+        <input type="radio" name="level" value="1" required checked/>
+        <div class="level-texts">
+          <span class="level-title">Level 1</span>
+          <span class="level-desc">운동을 모른다. (운동 머신 기본 조작법 미숙)</span>
+        </div>
+      </label>
+      <label class="level-label">
+        <input type="radio" name="level" value="2" required />
+        <div class="level-texts">
+          <span class="level-title">Level 2</span>
+          <span class="level-desc">입문자, 바른 자세를 모른다. ((운동 머신 기본 조작법 능숙)</span>
+        </div>
+      </label>
+      <label class="level-label">
+        <input type="radio" name="level" value="3" required />
+        <div class="level-texts">
+          <span class="level-title">Level 3</span>
+          <span class="level-desc">초보자, 머신으로 단순 반복 운동 가능하다.</span>
+        </div>
+      </label>
+      <label class="level-label">
+        <input type="radio" name="level" value="4" required />
+        <div class="level-texts">
+          <span class="level-title">Level 4</span>
+          <span class="level-desc">중급자, 머신으로 다양한 동작 수행 가능하다.</span>
+        </div>
+      </label>
+      <label class="level-label">
+        <input type="radio" name="level" value="5" required />
+        <div class="level-texts">
+          <span class="level-title">Level 5</span>
+          <span class="level-desc">전문가, 타인을 가르칠 수 있다.</span>
+        </div>
+      </label>
     </div>
 
-    <label for="injury">부상이 있으신가요?</label>
+    <label for="injury">부상 있으신가요? <span class="optional">(선택)</span></label>
     <textarea style="resize: none;"
       id="injury"
       name="injury"
-      rows="3"
-      placeholder="부위나 수준을 입력하세요."
+      rows="2"
+      placeholder="예: 손목부상, 허리부상"
     ></textarea>
 
     <div class="button-group">
       <button type="button" class="back-btn" onclick="history.back()">뒤로가기</button>
-      <button type="submit" class="submit-btn">가입하기</button>
+      <button type="submit" class="submit-btn">시작하기</button>
     </div>
   </form>
 
