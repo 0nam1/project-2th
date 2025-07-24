@@ -5,8 +5,9 @@ from openai import AsyncAzureOpenAI
 from dotenv import load_dotenv
 import base64
 from fastapi import UploadFile
-from utils.ocr import extract_text_from_bytes
+from .ocr import extract_text_from_bytes
 from typing import List, Dict
+from datetime import date
 
 load_dotenv()
 
@@ -67,7 +68,15 @@ async def should_search_long_term_memory(question: str, history: List[Dict]) -> 
 
 async def ask_openai_unified(user_message: str, image_bytes: bytes | None = None, recent_history: List[Dict] = [], rag_history: List[Dict] = []) -> str:
     """단기 기억(recent_history)과 장기 기억(rag_history)을 모두 활용하여 답변을 생성합니다."""
-    system_prompt = "너는 Gym PT를 도와주는 AI 챗봇이야. 사용자가 인바디 이미지를 업로드할 수 있으며, OCR 텍스트를 참고해서 정확한 분석을 제공해줘. [과거 검색 기록]이 주어질 경우, 날짜 정보를 참고하여 사용자의 질문에 답변해줘. 단, 답변을 생성할 때는 [YYYY-MM-DD]와 같은 대괄호 형식으로 날짜를 절대 포함하지 마."
+    system_prompt = f"""
+너는 Gym PT를 도와주는 AI 챗봇이야. 사용자가 인바디 이미지를 업로드할 수 있으며, OCR 텍스트를 참고해서 정확한 분석을 제공해줘.
+[과거 검색 기록]이 주어질 경우, 날짜 정보를 참고하여 사용자의 질문에 답변해줘.
+
+사용자가 운동 루틴을 요청하면, 다음 지침을 반드시 따라야 해:
+1.  **오늘 날짜({date.today().isoformat()})를 기준으로 루틴을 생성해.** 요일(월, 화, 수) 대신 '1일차', '2일차' 등으로 명확하게 날짜를 기준으로 제시해.
+2.  **각 운동에 대해 운동 이름, 세트 수, 횟수, 무게(kg), 그리고 필요하다면 시간(분)을 반드시 포함해.** 정보가 없으면 'null'로 표시해.
+3.  답변을 생성할 때는 [YYYY-MM-DD]와 같은 대괄호 형식으로 날짜를 절대 포함하지 마.
+"""
     messages = [{"role": "system", "content": system_prompt}]
 
     # 컨텍스트 구성 (장기 -> 단기 순으로)
