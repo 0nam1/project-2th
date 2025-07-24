@@ -1,3 +1,5 @@
+import { BASE_API_URL } from './config.js';
+
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
 
@@ -75,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let fullStreamBuffer = ""; // 전체 스트림 데이터를 저장할 버퍼
 
     try {
-      const res = await fetch("http://localhost:8000/chat/image", {
+      const res = await fetch(`${BASE_API_URL}/chat/image`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -97,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // 스트리밍 완료 후 YouTube 검색
         try {
-            const youtubeSearchRes = await fetch(`http://localhost:8000/youtube_search?query=${encodeURIComponent(fullStreamBuffer)}`, {
+            const youtubeSearchRes = await fetch(`${BASE_API_URL}/youtube_search?query=${encodeURIComponent(fullStreamBuffer)}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -150,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   profileBtn.addEventListener("click", async () => {
     try {
-      const res = await fetch("http://localhost:8000/protected/me", {
+      const res = await fetch(`${BASE_API_URL}/protected/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

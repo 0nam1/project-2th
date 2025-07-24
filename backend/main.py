@@ -1,8 +1,8 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from database import database
-from routers import user, protected, chat  # ← user.py는 routers/ 폴더 안에 있어야 함
+from .database import database
+from .routers import user, protected, chat, plan  # ← user.py는 routers/ 폴더 안에 있어야 함
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -27,3 +27,4 @@ async def shutdown():
 app.include_router(user.router)
 app.include_router(protected.router)
 app.include_router(chat.router)
+app.include_router(plan.router)

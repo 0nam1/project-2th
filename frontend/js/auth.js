@@ -1,5 +1,7 @@
 // js/auth.js
 
+import { BASE_API_URL } from './config.js';
+
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const loginForm = document.getElementById("login-form");
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       try {
-        const response = await fetch("http://localhost:8000/users/signup", {
+        const response = await fetch(`${BASE_API_URL}/users/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
@@ -55,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const user_id = document.getElementById("user_id").value;
 
       try {
-        const res = await fetch("http://localhost:8000/users/login", {
+        const res = await fetch(`${BASE_API_URL}/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id }),

@@ -14,7 +14,9 @@
     <select id="modelSelector" style="margin-right: 24px; padding: 6px 16px; border-radius: 8px; font-size:1rem;">
       <option value="gpt-4o">GPT4o</option>
     </select>
-    <!-- 로그아웃 버튼은 숨김 -->
+    <button id="profileBtn">내 정보 보기</button>
+    <button id="dashboardBtn" onclick="window.location.href='dashboard.html'">대시보드</button>
+    <button id="logoutBtn">로그아웃</button>
   </div>
 
   <!-- 안내문구(초기화면) -->
@@ -65,6 +67,6 @@
     </div>
   </div>
 
-  <script src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
