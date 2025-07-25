@@ -6,14 +6,18 @@
     <title>운동 계획 캘린더 - GymPT</title>
     
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <header>
-        <h1>GymPT 캘린더</h1>
-        <nav>
-            <a href="main.html" id="chatBtn" class="btn">채팅으로 돌아가기</a>
-        </nav>
-    </header>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">GymPT</div>
+    <div class="top-bar-right">
+      <button id="profileBtn">내 정보 보기</button>
+      <button id="chatBtn" onclick="window.location.href='main.html'">채팅으로 돌아가기</button>
+      <button id="logoutBtn">로그아웃</button>
+    </div>
+  </div>
 
     <div id="content-wrapper">
         <div id="calendar-container">
@@ -41,6 +45,15 @@
 
     
     <script src="js/calendar.js" type="module"></script>
+
+    <!-- Modal Popup -->
+    <div id="profileModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>👤 내 정보</h3>
+        <div id="profileDetails"></div>
+      </div>
+    </div>
 
     <!-- SVG Icons for Status -->
     <svg style="display: none;">

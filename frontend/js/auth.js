@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await response.json();
         alert(result.message || "가입 완료!");
         // ✅ JWT 토큰 저장
-        localStorage.setItem("token", result.access_token);
+        sessionStorage.setItem("token", result.access_token);
 
         // ✅ 메인 페이지로 이동
         window.location.href = "main.html";
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
           message.style.color = "green";
 
           // 토큰 저장
-          localStorage.setItem("token", data.access_token);
+          sessionStorage.setItem("token", data.access_token);
 
           // 메인 페이지로 이동
           window.location.href = "main.html";

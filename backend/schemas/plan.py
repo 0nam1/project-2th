@@ -31,6 +31,7 @@ class DietPlanCreate(BaseModel):
 class DietPlan(PlanBase, DietPlanCreate):
     id: int
     user_id: str
+    meal_type: str # 추가
 
     class Config:
         from_attributes = True
