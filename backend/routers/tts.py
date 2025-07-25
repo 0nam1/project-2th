@@ -15,6 +15,8 @@ tts_endpoint = os.getenv("TTS_ENDPOINT")
 tts_key = os.getenv("TTS_SUBSCRIPTION_KEY")
 
 AUDIO_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../audio_temp'))   # 임시 오디오 파일 생성 폴더 경로 지정
+if not os.path.exists(AUDIO_TEMP_DIR):      # 없으면 폴더 생성
+    os.makedirs(AUDIO_TEMP_DIR)
 
 def clean_text_for_tts(text, max_length=9000):
     # 줄바꿈(\n, \r\n 등)을 마침표로 변경
