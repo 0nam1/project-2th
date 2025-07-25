@@ -286,21 +286,6 @@ async def get_youtube_videos(
 ):
     # (이하 로직은 기존과 동일하게 유지)
     try:
-<<<<<<< HEAD
-        youtube_query_prompt = f"""
-        - [중요]'스포츠 지도사 1급' 책과 '헬스의 정석-근력운동'책을 학습했어
-        - 구체적인 운동루틴을 물어보거나, 어떤 운동을 해야하는 질문하는 경우에만 영상을 추출해줘 보여줘.
-        - 일반적인 대화로 보는 경우 예를 들어 인사, 대화 등. 운동 종목과 관련되지 않은 키워드가 없는 경우에는 영상을 추출하지 말고. 그냥 답변만 해줘.
-        - 운동에서도, 일반 체육 이론의 경우는 영상을 추출하지 말아줘.
-        - [중요] 인바디 체성분 분석 이미지를 올려서 답변을 요청한 경우에는 운동 루틴 영상을 추출해줘야해!
-        - '부위'+'운동'은 무조건 운동 방법을 알려주는 경우니까 유튜브 영상 추출해줘.
-        - 단순히 '근육', '체육', '달리기'를 물어보는 것에 대해 유튜브 영상 추출하지 말아줘.
-        - 답변에 운동 종목, 운동 횟수가 포함된 경우에는 유튜브 영상 추출해줘.
-        - [중요] 단순 영상 요청이나, 운동과 관련없는 영상 요청의 경우 "운동과 관련되지 않은 영상은 추천되지 않습니다." 메시지로 답변해줘.
-        - 그럼에도 '재밌는 운동 알려줘'와 유사한 질문에는 체육관 운동 영상으로 추천해줘.
-        - 다음 텍스트에서 YouTube에서 검색할 운동 루틴, 운동 종목 관련 키워드를 3개 이내로 추출해줘. 텍스트가 운동 루틴과 관련이 없다면 'None'이라고만 답변해줘. 텍스트: '{ai_response}'
-        """
-=======
         youtube_query_prompt = f"""From the following text, extract up to **3 keywords** that can be used to search for **YouTube workout routines or specific exercises**.
  
             ✅ [Extract keywords only if at least one of the following conditions is met:]
@@ -324,8 +309,7 @@ async def get_youtube_videos(
             - If no condition is met, return only 'None'. Do **not** add any explanation or extra text.
  
             Text: '{ai_response}'"""
->>>>>>> main
-        
+ 
         youtube_keyword_response = await chat_client.chat.completions.create(
             model=CHAT_DEPLOYMENT_NAME,
             messages=[
