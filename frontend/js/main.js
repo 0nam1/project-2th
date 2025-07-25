@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("[sendMessage] /chat/image로 fetch 시작");
-      const res = await fetch("http://localhost:8000/chat/image", {
+      const res = await fetch("/chat/image", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           console.log("[sendMessage] 유튜브 검색 fetch", fullStreamBuffer);
           const youtubeSearchRes = await fetch(
-            `http://localhost:8000/youtube_search?query=${encodeURIComponent(
+            `/youtube_search?query=${encodeURIComponent(
               fullStreamBuffer
             )}`,
             {
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   profileBtn.addEventListener("click", async () => {
     try {
-      const res = await fetch("http://localhost:8000/protected/me", {
+      const res = await fetch("/protected/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // async function playTTS(text) {
 //   console.log("[playTTS] 호출됨. text:", text);
 //   try {
-//     const ttsRes = await fetch("http://localhost:8000/tts", {
+//     const ttsRes = await fetch("/tts", {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",

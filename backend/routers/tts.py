@@ -14,11 +14,13 @@ load_dotenv(os.path.join(basedir, '../.env'))
 tts_endpoint = os.getenv("TTS_ENDPOINT")
 tts_key = os.getenv("TTS_SUBSCRIPTION_KEY")
 
-AUDIO_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../audio_temp'))
+AUDIO_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../audio_temp'))   # 임시 오디오 파일 생성 폴더 경로 지정
 
-def clean_text_for_tts(text, max_length=9500):
-    # 한글, 영문, 숫자, 공백, . , ! ? 만 허용. 나머지는 삭제
-    pattern = r"[^가-힣a-zA-Z0-9\s.,!?]"
+def clean_text_for_tts(text, max_length=9000):
+    # 줄바꿈(\n, \r\n 등)을 마침표로 변경
+    text = re.sub(r'\s*[\r\n]+\s*', '.', text)
+    # 한글, 영문, 숫자, 공백, . , ! ? ~ 만 허용. 나머지는 삭제
+    pattern = r"[^가-힣a-zA-Z0-9\s.,!?~]"
     cleaned = re.sub(pattern, "", text)
     # 연속된 공백은 하나로
     cleaned = re.sub(r"\s+", " ", cleaned)

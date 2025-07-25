@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       try {
-        const response = await fetch("http://localhost:8000/users/signup", {
+        const response = await fetch("/users/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const user_id = document.getElementById("user_id").value;
 
       try {
-        const res = await fetch("http://localhost:8000/users/login", {
+        const res = await fetch("/users/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id }),
