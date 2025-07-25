@@ -1,6 +1,6 @@
 # crud/user.py
-from database import database
-from schemas.user import UserSignup
+from ..database import database
+from ..schemas.user import UserSignup
 
 async def create_user(user: UserSignup):
     # 1. 먼저 동일한 user_id가 이미 존재하는지 확인

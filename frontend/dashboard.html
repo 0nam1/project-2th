@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운동 계획 캘린더 - GymPT</title>
+    
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">GymPT</div>
+    <div class="top-bar-right">
+      <button id="profileBtn">내 정보 보기</button>
+      <button id="chatBtn" onclick="window.location.href='main.html'">채팅으로 돌아가기</button>
+      <button id="logoutBtn">로그아웃</button>
+    </div>
+  </div>
+
+    <div id="content-wrapper">
+        <div id="calendar-container">
+            <div id="calendar-header">
+                <button id="prevMonthBtn">&lt;</button>
+                <h2 id="currentMonthYear"></h2>
+                <button id="nextMonthBtn">&gt;</button>
+            </div>
+            <div id="calendar-weekdays"></div>
+            <div id="calendar-grid"></div>
+        </div>
+        <div id="detail-view-container">
+            <h2>Daily Plan</h2>
+            <div id="selected-date-display"></div>
+            <div id="workout-plan-details">
+                <h3>운동 계획</h3>
+                <p>날짜를 선택해주세요.</p>
+            </div>
+            <div id="meal-plan-details">
+                <h3>식단 계획</h3>
+                <p>날짜를 선택해주세요.</p>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="js/calendar.js" type="module"></script>
+
+    <!-- Modal Popup -->
+    <div id="profileModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>👤 내 정보</h3>
+        <div id="profileDetails"></div>
+      </div>
+    </div>
+
+    <!-- SVG Icons for Status -->
+    <svg style="display: none;">
+        <symbol id="icon-check" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </symbol>
+        <symbol id="icon-circle" viewBox="0 0 24 24">
+            <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </symbol>
+        <symbol id="icon-x" viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </symbol>
+    </svg>
+</body>
+</html>

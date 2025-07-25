@@ -1,5 +1,7 @@
 // js/auth.js
 
+import { BASE_API_URL } from './config.js';
+
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const loginForm = document.getElementById("login-form");
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       try {
-        const response = await fetch("http://localhost:8000/users/signup", {
+        const response = await fetch(`${BASE_API_URL}/users/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await response.json();
         alert(result.message || "가입 완료!");
         // ✅ JWT 토큰 저장
-        localStorage.setItem("token", result.access_token);
+        sessionStorage.setItem("token", result.access_token);
 
         // ✅ 메인 페이지로 이동
         window.location.href = "main.html";
@@ -55,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const user_id = document.getElementById("user_id").value;
 
       try {
-        const res = await fetch("http://localhost:8000/users/login", {
+        const res = await fetch(`${BASE_API_URL}/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id }),
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
           message.style.color = "green";
 
           // 토큰 저장
-          localStorage.setItem("token", data.access_token);
+          sessionStorage.setItem("token", data.access_token);
 
           // 메인 페이지로 이동
           window.location.href = "main.html";
