@@ -1,7 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from database import database
-from routers import user, protected, chat, tts  # ← user.py는 routers/ 폴더 안에 있어야 함
+from routers import user, protected, chat, tts, batch_tts  # ← user.py는 routers/ 폴더 안에 있어야 함
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -34,6 +34,7 @@ app.include_router(user.router)
 app.include_router(protected.router)
 app.include_router(chat.router)
 app.include_router(tts.router)
+app.include_router(batch_tts.router)
 
 # 정적 파일 마운트
 app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="static")

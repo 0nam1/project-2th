@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function playTTS(text) {
     console.log("[playTTS] 호출됨. text:", text);
     try {
-      const ttsRes = await fetch("/tts", {
+      const ttsRes = await fetch("/batch_tts", {    // "/tts" = 일반TTS, "/batch_tts" = Batch TTS
         method: "POST",
         headers: {
           "Content-Type": "application/json",
