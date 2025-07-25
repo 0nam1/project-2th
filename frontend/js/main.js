@@ -223,19 +223,71 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("[프로필] 모달 닫힘(백그라운드 클릭)");
     }
   });
+  // TTS 요청 및 오디오 재생 함수(진단용 로그 추가)
+  async function playTTS(text) {
+    console.log("[playTTS] 호출됨. text:", text);
+    try {
+      const ttsRes = await fetch("/tts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text }),
+      });
+      console.log("[playTTS] fetch 응답 status:", ttsRes.status);
+      if (ttsRes.ok) {
+        const arrayBuffer = await ttsRes.arrayBuffer();
+        console.log("[playTTS] wav 파일 길이(byte):", arrayBuffer.byteLength);
+
+        const blob = new Blob([arrayBuffer], { type: "audio/wav" });
+        const audioUrl = URL.createObjectURL(blob);
+        console.log("[playTTS] audioUrl:", audioUrl);
+
+        const audio = new Audio(audioUrl);
+
+        audio.oncanplaythrough = () => {
+          console.log("[playTTS] 오디오 재생 준비됨. 재생 시작!");
+        };
+        audio.onended = () => {
+          console.log("[playTTS] 오디오 재생 끝!");
+        };
+        audio.onerror = (e) => {
+          console.error("[playTTS] 오디오 에러", e);
+        };
+
+        // 실제 재생 시도
+        try {
+          await audio.play();
+          console.log("[playTTS] audio.play() 실행됨");
+        } catch (playErr) {
+          console.error("[playTTS] audio.play() 에러:", playErr);
+        }
+      } else {
+        console.error("[playTTS] TTS audio fetch error", ttsRes.status);
+      }
+    } catch (err) {
+      console.error("[playTTS] TTS fetch/play error", err);
+    }
+  }
 });
 
 
-// // TTS 요청 및 오디오 재생 함수(진단용 로그 추가)
+
+
+
 // async function playTTS(text) {
 //   console.log("[playTTS] 호출됨. text:", text);
 //   try {
+//     // 토큰 사용 여부 결정
+//     let headers = { "Content-Type": "application/json" };
+//     if (typeof token !== 'undefined' && token) {
+//       headers["Authorization"] = `Bearer ${token}`;
+//     }
+
 //     const ttsRes = await fetch("/tts", {
 //       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
+//       headers,
 //       body: JSON.stringify({ text }),
 //     });
 //     console.log("[playTTS] fetch 응답 status:", ttsRes.status);
@@ -273,55 +325,4 @@ document.addEventListener("DOMContentLoaded", () => {
 //     console.error("[playTTS] TTS fetch/play error", err);
 //   }
 // }
-
-
-async function playTTS(text) {
-  console.log("[playTTS] 호출됨. text:", text);
-  try {
-    // 토큰 사용 여부 결정
-    let headers = { "Content-Type": "application/json" };
-    if (typeof token !== 'undefined' && token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    const ttsRes = await fetch("/tts", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ text }),
-    });
-    console.log("[playTTS] fetch 응답 status:", ttsRes.status);
-    if (ttsRes.ok) {
-      const arrayBuffer = await ttsRes.arrayBuffer();
-      console.log("[playTTS] wav 파일 길이(byte):", arrayBuffer.byteLength);
-
-      const blob = new Blob([arrayBuffer], { type: "audio/wav" });
-      const audioUrl = URL.createObjectURL(blob);
-      console.log("[playTTS] audioUrl:", audioUrl);
-
-      const audio = new Audio(audioUrl);
-
-      audio.oncanplaythrough = () => {
-        console.log("[playTTS] 오디오 재생 준비됨. 재생 시작!");
-      };
-      audio.onended = () => {
-        console.log("[playTTS] 오디오 재생 끝!");
-      };
-      audio.onerror = (e) => {
-        console.error("[playTTS] 오디오 에러", e);
-      };
-
-      // 실제 재생 시도
-      try {
-        await audio.play();
-        console.log("[playTTS] audio.play() 실행됨");
-      } catch (playErr) {
-        console.error("[playTTS] audio.play() 에러:", playErr);
-      }
-    } else {
-      console.error("[playTTS] TTS audio fetch error", ttsRes.status);
-    }
-  } catch (err) {
-    console.error("[playTTS] TTS fetch/play error", err);
-  }
-}
 
