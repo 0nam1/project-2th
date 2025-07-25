@@ -30,14 +30,12 @@ if not os.path.exists(AUDIO_TEMP_DIR):
     os.makedirs(AUDIO_TEMP_DIR)
 
 # 텍스트 정제 함수
-def clean_text_for_tts(text, max_length=9000):
+def clean_text_for_tts(text):
     text = re.sub(r'\s*[\r\n]+\s*', '.', text)  # 줄바꿈→마침표
     pattern = r"[^가-힣a-zA-Z0-9\s.,!?~]"
     cleaned = re.sub(pattern, "", text)
     cleaned = re.sub(r"\s+", " ", cleaned)
     cleaned = cleaned.strip()
-    if len(cleaned) > max_length:
-        cleaned = cleaned[:max_length]
     return cleaned
 
 # 고유 SynthesisId 만들기
