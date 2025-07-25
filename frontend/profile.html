@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>내정보 - GYMPT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="res/G.ico" type="image/x-icon">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left" style="cursor:pointer;" onclick="window.location.href='main.html'"><img src="gympt_main_logo.png" alt="GYMPT 로고" style="height:32px;vertical-align:middle;"></div>
+    <div class="top-bar-right-group">
+      <div class="top-bar-tabs">
+        <button class="tab-btn" onclick="window.location.href='main.html'">채팅</button>
+        <button class="tab-btn" onclick="window.location.href='dashboard.html'">운동캘린더</button>
+        <button class="tab-btn active" onclick="window.location.href='profile.html'">내정보</button>
+      </div>
+      <button id="logoutBtn" class="tab-btn">로그아웃</button>
+    </div>
+  </div>
+  <div class="main-content">
+    <div id="profile-box" style="width:100%;max-width:700px;display:flex;flex-direction:column;background:#fff;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,0.05);overflow:hidden;margin-top:40px;">
+      <div class="profile-content" style="padding-left:32px;padding-right:32px;">
+        <div class="profile-row">
+          <div class="profile-label">아이디</div>
+          <div class="profile-value" id="profile-id"></div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">성별</div>
+          <div class="profile-value" id="profile-gender"></div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">나이</div>
+          <div class="profile-value" id="profile-age"></div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">키</div>
+          <div class="profile-value" id="profile-height"></div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">몸무게</div>
+          <div class="profile-value" id="profile-weight"></div>
+        </div>
+      </div>
+      <div class="profile-divider-wrapper"><div class="profile-divider"></div></div>
+      <div class="profile-content" style="padding-left:32px;padding-right:32px;">
+        <div class="profile-row">
+          <div class="profile-label">운동 수준</div>
+          <div class="profile-value" id="profile-level"></div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">부상</div>
+          <div class="profile-value" id="profile-injury-detail"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html> 

@@ -11,11 +11,14 @@
 <body>
   <!-- Top Bar -->
   <div class="top-bar">
-    <div class="top-bar-left">GymPT</div>
-    <div class="top-bar-right">
-      <button id="profileBtn">내 정보 보기</button>
-      <button id="chatBtn" onclick="window.location.href='main.html'">채팅으로 돌아가기</button>
-      <button id="logoutBtn">로그아웃</button>
+    <div class="top-bar-left" style="cursor:pointer;" onclick="window.location.href='main.html'"><img src="gympt_main_logo.png" alt="GYMPT 로고" style="height:32px;vertical-align:middle;"></div>
+    <div class="top-bar-right-group">
+      <div class="top-bar-tabs">
+        <button class="tab-btn" onclick="window.location.href='main.html'">채팅</button>
+        <button class="tab-btn active" onclick="window.location.href='dashboard.html'">운동캘린더</button>
+        <button class="tab-btn" onclick="window.location.href='profile.html'">내정보</button>
+      </div>
+      <button id="logoutBtn" class="tab-btn">로그아웃</button>
     </div>
   </div>
 
@@ -47,13 +50,7 @@
     <script src="js/calendar.js" type="module"></script>
 
     <!-- Modal Popup -->
-    <div id="profileModal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>👤 내 정보</h3>
-        <div id="profileDetails"></div>
-      </div>
-    </div>
+    <!-- 내정보 모달 제거 -->
 
     <!-- SVG Icons for Status -->
     <svg style="display: none;">

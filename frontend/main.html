@@ -10,10 +10,15 @@
 <body>
   <!-- Top Bar -->
   <div class="top-bar">
-    <div class="top-bar-left">GymPT</div>
-    <button id="profileBtn">내 정보 보기</button>
-    <button id="dashboardBtn" onclick="window.location.href='dashboard.html'">대시보드</button>
-    <button id="logoutBtn">로그아웃</button>
+    <div class="top-bar-left" style="cursor:pointer;" onclick="window.location.href='main.html'"><img src="gympt_main_logo.png" alt="GYMPT 로고" style="height:32px;vertical-align:middle;"></div>
+    <div class="top-bar-right-group">
+      <div class="top-bar-tabs">
+        <button class="tab-btn active" onclick="window.location.href='main.html'">채팅</button>
+        <button class="tab-btn" onclick="window.location.href='dashboard.html'">운동캘린더</button>
+        <button class="tab-btn" onclick="window.location.href='profile.html'">내정보</button>
+      </div>
+      <button id="logoutBtn" class="tab-btn">로그아웃</button>
+    </div>
   </div>
 
   <!-- Main Content Area -->
@@ -35,10 +40,6 @@
 
     <!-- Input form moved here -->
     <form id="chat-form">
-      <select id="modelSelector" class="chat-model-selector">
-        <option value="gpt-4o">GPT4o</option>
-        <option value="llama3.2:1b">Llama 3.2</option>
-      </select>
       <div id="input-controls">
         <div id="input-area">
           <input type="text" id="userInput" placeholder="여기에 질문을 입력하세요." autocomplete="off" />
@@ -53,17 +54,15 @@
           <span id="clearImageBtn" class="clear-image-btn">&times;</span>
         </div>
       </div>
+      <select id="modelSelector" class="chat-model-selector">
+        <option value="gpt-4o">GPT4o</option>
+        <option value="llama3.2:1b">Llama 3.2</option>
+      </select>
     </form>
   </div>
 
   <!-- Modal Popup -->
-  <div id="profileModal" class="modal hidden">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h3>👤 내 정보</h3>
-      <div id="profileDetails"></div>
-    </div>
-  </div>
+  <!-- 내정보 모달 제거 -->
 
   <script type="module" src="js/main.js"></script>
 </body>
