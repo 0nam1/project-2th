@@ -34,8 +34,6 @@ async def search_youtube_videos(query: str, max_result: int = 3) -> dict:
 
         if not items:
             return {"success": False, "message": "No results found.", "videos": []}
-        
-        thumbnails = [item['snippet']['thumbnails']['medium']['url'] for item in items]
 
         videos = []
         for item in items:
@@ -44,7 +42,7 @@ async def search_youtube_videos(query: str, max_result: int = 3) -> dict:
             video_url = f"https://www.youtube.com/watch?v={video_id}"
             videos.append({"title": title, "url": video_url, "id": video_id})
             
-        return {"success": True, "message": "Videos found.", "videos": thumbnails}
+        return {"success": True, "message": "Videos found.", "videos": videos}
     except HttpError as e:
         return {"success": False, "message": f"YouTube API error: {e}", "videos": []}
     except Exception as e:
