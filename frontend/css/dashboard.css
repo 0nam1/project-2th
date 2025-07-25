@@ -39,13 +39,10 @@ header nav .btn:hover {
 }
 
 #content-wrapper {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* 간격 추가 */
-    max-width: 1200px; /* 전체 컨테이너 최대 너비 줄임 */
+    display: block;
+    max-width: 700px;
     margin: 30px auto;
-    padding: 20px;
-    align-items: flex-start; /* 추가: 아이템들을 상단에 정렬 */
+    padding: 0;
 }
 
 #calendar-container {
@@ -59,6 +56,8 @@ header nav .btn:hover {
     border: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    margin: 0 auto;
 }
 
 /* Custom Calendar Styles */
@@ -164,7 +163,7 @@ header nav .btn:hover {
 
 /* 이벤트 있는 날 */
 .calendar-day.has-event .day-number {
-    background-color: #4CAF50; /* 이벤트 있는 날 동그라미 색상 */
+    background-color: #1E6F5C; /* 이벤트 있는 날 동그라미 색상 */
     color: white; /* 이벤트 있는 날 텍스트 색상 */
     font-weight: 600;
 }
@@ -177,7 +176,7 @@ header nav .btn:hover {
 
 /* 오늘 날짜이면서 일정이 있는 경우 (가장 높은 우선순위) */
 .calendar-day.today.has-event .day-number {
-    background-color: #4CAF50; /* 오늘 날짜이면서 이벤트 있는 날 동그라미 색상 */
+    background-color: #1E6F5C; /* 오늘 날짜이면서 이벤트 있는 날 동그라미 색상 */
     color: white; /* 오늘 날짜이면서 이벤트 있는 날 텍스트 색상 */
 }
 
@@ -188,32 +187,26 @@ header nav .btn:hover {
 
 /* Detail View Slide-in/out */
 #detail-view-container {
-    flex-shrink: 0;
-    flex-basis: 0; /* 초기 flex-basis를 0으로 설정 */
-    max-width: 0; /* 초기 너비를 0으로 설정하여 숨김 */
-    overflow: hidden; /* 내용 숨김 */
-    transition: max-width 0.3s ease-in-out, padding 0.3s ease-in-out, flex-basis 0.3s ease-in-out, border 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* border와 box-shadow도 애니메이션에 포함 */
-
-    padding: 0; /* 초기 패딩 0 */
+    display: none;
+    width: 100%;
+    max-width: 700px;
+    margin: 0;
+    padding: 0;
     background: #ffffff;
     border-radius: 12px;
-    /* 초기에는 테두리와 그림자 없음 */
     border: none;
     box-shadow: none;
-
-    display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-left: 0; /* 초기 마진 0 */
 }
-
 #detail-view-container.open {
-    flex-basis: 400px; /* 열렸을 때 flex-basis 설정 */
-    max-width: 400px; /* 열렸을 때 너비 */
-    padding: 25px; /* 열렸을 때 패딩 */
-    margin-left: 20px; /* 열렸을 때 캘린더와의 간격 */
-    border: 1px solid #e0e0e0; /* 열렸을 때 테두리 적용 */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 열렸을 때 그림자 적용 */
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    padding: 25px;
+    margin: 10px 0 0 0;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 #detail-view-container h2 {
@@ -276,4 +269,18 @@ header nav .btn:hover {
 
 .status-added .status-icon svg {
     fill: #2196F3; /* Blue for added items */
+}
+
+#calendar-container,
+#detail-view-container,
+#detail-view-container.open {
+  width: 100%;
+  max-width: 700px;
+  padding: 25px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }

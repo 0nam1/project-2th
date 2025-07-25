@@ -9,41 +9,94 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure body takes full viewport height */
-  padding-top: 60px; /* Space for top bar */
-  padding-bottom: 80px; /* Adjusted padding for fixed input form */
+  min-height: 100vh;
+  padding-top: 56px; /* 상단바 높이만큼만 여백 */
+  padding-bottom: 80px;
   box-sizing: border-box;
 }
 
-/* Top Bar */
+/* 상단 바 탭 스타일 */
 .top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 24px;
+  height: 56px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Center content horizontally */
-  padding: 0 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   z-index: 1000;
-  box-sizing: border-box;
 }
-
 .top-bar-left {
-  font-size: 1.5rem;
   font-weight: bold;
-  color: #008080;
-  margin-right: auto; /* Push to left */
+  font-size: 1.3rem;
+  letter-spacing: 1px;
 }
-
-.top-bar-right {
+.top-bar-tabs {
+  display: flex;
+  gap: 24px;
+}
+.tab-btn {
+  border-bottom: 2px solid transparent;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border 0.2s, color 0.2s;
+  color: #111 !important;
   display: flex;
   align-items: center;
-  gap: 10px; /* Add gap between buttons */
-  margin-left: auto; /* Push to right */
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.tab-btn:hover,
+.tab-btn:focus,
+.tab-btn:active {
+  border-bottom: 2px solid transparent !important;
+}
+
+.tab-btn.active {
+  border-bottom: 2px solid #008080 !important;
+  color: #008080;
+}
+
+/* 상단 바 오른쪽 그룹 */
+.top-bar-right-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+  height: 56px;
+  padding-right: 45px;
+}
+.top-bar-tabs {
+  display: flex;
+  gap: 24px;
+  height: 100%;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  margin: 0;
+  box-sizing: border-box;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+  transition: border 0.2s, color 0.2s;
 }
 
 .top-bar button, .top-bar select {
@@ -51,21 +104,15 @@ body {
   border: none;
   border-radius: 0; /* No border-radius */
   cursor: pointer;
-  color: #008080; /* Teal color */
   background-color: transparent; /* No background color */
   transition: background-color 0.3s ease;
   font-size: 0.95rem;
   font-weight: 600;
 }
 
-.top-bar button:not(:first-child) {
-  border-left: 1px solid #ccc; /* Thin line separator */
-  padding-left: 20px; /* Adjust padding for separator */
-}
-
-.top-bar button:hover, .top-bar select:hover {
-  background-color: rgba(0, 128, 128, 0.1); /* Light teal background on hover */
-  transform: none; /* Remove transform effect */
+/* 버튼 hover 시 배경색 변화 없도록 명시 */
+.tab-btn:hover {
+  background: transparent !important;
 }
 
 .top-bar select {
@@ -80,7 +127,9 @@ body {
 .chat-model-selector {
   width: 150px;
   padding: 8px 15px;
-  margin-bottom: 15px;
+  margin-top: 8px;
+  margin-left: auto;
+  display: block;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -91,7 +140,7 @@ body {
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
-  padding-right: 30px;
+  box-sizing: border-box;
 }
 
 /* Main Content Area */
@@ -100,9 +149,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center content vertically initially */
-  padding: 20px;
-  overflow-y: auto;
+  justify-content: flex-start;
+  padding: 0 20px 20px 20px;
+  min-height: 0;
   box-sizing: border-box;
   transition: all 0.5s ease-in-out; /* For smooth transition */
 }
@@ -116,6 +165,7 @@ body {
   display: flex; /* Use flex for internal alignment */
   flex-direction: column;
   align-items: center;
+  margin-top: 200px;
 }
 
 
@@ -192,21 +242,21 @@ body {
 /* Input Form */
 #chat-form {
   width: 100%;
-  max-width: 600px; /* Reduced width */
-  margin: 20px auto; /* Initial margin */
+  max-width: 600px;
+  margin: 16px auto 0 auto;
   box-sizing: border-box;
-  padding: 0; /* Remove initial padding from form */
-  transition: all 0.5s ease-in-out; /* Smooth transition for position and size */
-  /* No absolute positioning initially */
+  padding: 0;
+  transition: all 0.5s ease-in-out;
 }
 
 /* Main Content Area - Adjust for chat active state */
-.main-content.chat-active {
-  justify-content: flex-start; /* Push content to top */
-  align-items: center; /* Align items to the center */
-}
+/* .main-content.chat-active는 별도 스타일 없이 제거 */
 
 /* When chat is active */
+.main-content.chat-active {
+  gap: 0 !important;
+}
+
 .main-content.chat-active #welcome-message {
   opacity: 0;
   transform: translateY(-20px);
@@ -214,6 +264,7 @@ body {
   height: 0; /* Collapse height when hidden */
   overflow: hidden;
   margin-bottom: 0; /* Remove margin when hidden */
+  display: none !important;
 }
 
 .main-content.chat-active #chat-wrapper {
@@ -222,14 +273,15 @@ body {
   pointer-events: auto;
   height: auto; /* Allow chat wrapper to take height */
   flex: 1; /* Take up remaining space */
-  margin-bottom: 20px; /* Space for input form */
+  margin-bottom: 0; /* Space for input form */
+  margin-top: 18px !important;
 }
 
 /* Chat Wrapper */
 #chat-wrapper {
   flex: 1;
   width: 100%;
-  max-width: 600px; /* Consistent max-width */
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -237,9 +289,11 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   opacity: 0;
-  height: 0; /* Initially hidden */
+  height: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease, transform 0.5s ease, height 0.5s ease; /* Add height transition */
+  transition: opacity 0.5s ease, transform 0.5s ease, height 0.5s ease;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
 #input-controls {
@@ -435,62 +489,72 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Play button for TTS */
-.play-button-wrapper {
-  display: flex;
-  align-items: center;
-  background-color: #fff; /* White background */
-  border: 1px solid #008080; /* Teal border */
-  border-radius: 20px; /* More rounded corners */
-  padding: 2px 10px; /* Adjusted padding for smaller, consistent box */
-  margin-bottom: 2px; /* Even closer to message bubble */
-  width: fit-content; /* Adjust width to content */
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-  align-self: flex-start;
-}
-
-.play-button-wrapper:hover {
-  background-color: #f0f8f8; /* Light teal background on hover */
-  border-color: #006666; /* Darker teal on hover */
-}
-
-.play-button {
-  background: none;
+/* 버튼 공통 스타일 */
+.tab-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  font-size: 1.1rem;
   border: none;
-  padding: 0;
   cursor: pointer;
+  text-align: center;
+}
+
+.tab-btn {
+  color: #111 !important;
+  background: none;
+}
+
+.profile-content {
+  max-width: 500px;
+  width: 100%;
+  margin: 40px 0 0 0;
+  padding: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #008080; /* Teal color for the play icon */
-  margin-right: 8px; /* Consistent space between icon and text */
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 1.98rem;
+  color: #222;
+}
+.profile-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 26px;
+}
+.profile-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #888;
+  margin-bottom: 2px;
+}
+.profile-value {
+  font-size: 25px;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 0;
+}
+.profile-divider-wrapper {
+  position: relative;
+  height: 24px;
 }
 
-.play-button svg {
-  width: 20px; /* Consistent icon size */
-  height: 20px; /* Consistent icon size */
-  fill: currentColor; /* Use parent's color */
+.profile-divider {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  width: auto;
+  height: 6.4px;
+  background: #e0e0e0;
+  margin: 0 auto;
+  border-radius: 6px;
+  top: 50%;
+  transform: translateY(-50%);
 }
-
-.play-button-text {
-  font-size: 1em; /* Slightly larger font for text */
-  color: #008080; /* Changed text color to match button */
-  white-space: nowrap; /* Prevent text from wrapping */
-}
-
-/* Loading spinner for TTS */
-.loading-spinner {
-  border: 3px solid #f3f3f3; /* Light grey */
-  border-top: 3px solid #008080; /* Teal */
-  border-radius: 50%;
-  width: 20px; /* Consistent spinner size */
-  height: 20px; /* Consistent spinner size */
-  animation: spin 1s linear infinite;
-  margin-right: 8px; /* Consistent space between spinner and text */
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.main-content {
+  padding-left: 0 !important;
 }

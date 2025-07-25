@@ -55,6 +55,48 @@ async function getAudio(key) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // 로그아웃 버튼 바인딩
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("chatHistory");
+      window.location.href = "index.html";
+    });
+  }
+
+  // profile.html에서만 내정보 불러오기
+  if (window.location.pathname.endsWith("profile.html")) {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "index.html";
+      return;
+    }
+    fetch(`${BASE_API_URL}/protected/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("사용자 정보를 불러올 수 없습니다.");
+        return res.json();
+      })
+      .then(data => {
+        const user = data.user;
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        set("profile-id", user.user_id);
+        set("profile-gender", user.gender);
+        set("profile-age", user.age + "세");
+        set("profile-height", user.height + "cm");
+        set("profile-weight", user.weight + "kg");
+        set("profile-level", user.level_desc || user.level);
+        set("profile-injury-detail", user.injury_part || "없음");
+      })
+      .catch(err => {
+        alert("내 정보를 불러오는 데 실패했습니다.");
+        window.location.href = "index.html";
+      });
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token) {
@@ -72,25 +114,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const imageInput = document.getElementById("imageInput");
   const previewWrapper = document.getElementById("imagePreviewWrapper");
   const previewImage = document.getElementById("previewImage");
-<<<<<<< HEAD
   const chatForm = document.getElementById("chat-form");
   const chatFormChat = document.getElementById("chat-form-chat");
   const userInputChat = document.getElementById("userInputChat");
   const imageInputChat = document.getElementById("imageInputChat");
-=======
-  const modelSelector = document.getElementById("modelSelector");
-  const clearImageBtn = document.getElementById("clearImageBtn"); // 추가
->>>>>>> main
 
   const profileBtn = document.getElementById("profileBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
   const modal = document.getElementById("profileModal");
   const profileDetails = document.getElementById("profileDetails");
   const closeModalBtn = document.querySelector(".close");
 
   let chatHistory = []; // 채팅 기록을 저장할 배열
 
-<<<<<<< HEAD
   const welcomeMsg = document.getElementById("welcome-message");
   const chatWrapper = document.getElementById("chat-wrapper");
 
@@ -126,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!message && !file) return;
 
     appendMessage("user", message || "[이미지 전송]");
-=======
   let currentAudio = null; // 현재 재생 중인 오디오 객체를 저장
   let currentPlayingAudioKey = null; // 현재 재생 중인 오디오의 키
 
@@ -424,7 +458,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chatHistory.push({ sender: "user", text: message || "[이미지 전송]", videos: [] }); // 사용자 메시지 저장
     saveChatHistory();
     userInput.value = "";
->>>>>>> main
 
     const formData = new FormData();
     formData.append("message", message);
@@ -438,21 +471,18 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBox.appendChild(botMessageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
 
-<<<<<<< HEAD
     // YouTube 영상을 표시할 컨테이너 추가
     const youtubeVideosContainer = document.createElement("div");
     youtubeVideosContainer.className = "youtube-videos-container";
     chatBox.appendChild(youtubeVideosContainer);
 
     let fullStreamBuffer = "";
-=======
     // TTS 로딩 박스 미리 추가
     const ttsLoadingWrapper = addPlayButton(null, true); // 로딩 상태로 생성
     botMessageDiv.parentNode.insertBefore(ttsLoadingWrapper, botMessageDiv);
 
     let fullStreamBuffer = "";
     let youtubeVideos = []; // YouTube 영상 데이터를 저장할 배열
->>>>>>> main
 
     try {
       const res = await fetch(`${BASE_API_URL}/chat/image`, {
@@ -473,7 +503,6 @@ document.addEventListener("DOMContentLoaded", () => {
           fullStreamBuffer += chunk;
           chatBox.scrollTop = chatBox.scrollHeight;
         }
-<<<<<<< HEAD
 
         // 스트리밍 완료 후 YouTube 검색
         try {
@@ -506,22 +535,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 youtubeVideosContainer.appendChild(videoItem);
               });
-=======
-        
-        // YouTube 검색 및 데이터 저장
-        try {
-            const youtubeSearchRes = await fetch(`${BASE_API_URL}/youtube_search?query=${encodeURIComponent(fullStreamBuffer)}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (youtubeSearchRes.ok) {
-                const videoData = await youtubeSearchRes.json();
-                if (videoData && videoData.length > 0) {
-                    youtubeVideos = videoData; // YouTube 영상 데이터 저장
-                }
-            } else {
-                console.error("Failed to fetch YouTube videos:", youtubeSearchRes.status, youtubeSearchRes.statusText);
->>>>>>> main
             }
           } else {
             console.error("Failed to fetch YouTube videos:", youtubeSearchRes.status, youtubeSearchRes.statusText);
@@ -581,7 +594,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(err);
     }
 
-<<<<<<< HEAD
     if (imageInput) imageInput.value = "";
     if (previewImage) previewImage.src = "";
     if (previewWrapper) previewWrapper.classList.remove("show");
@@ -619,22 +631,6 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "index.html";
     });
   }
-=======
-    clearImagePreview(); // 메시지 전송 후 미리보기 초기화
-  });
-
-  logoutBtn.addEventListener("click", () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("chatHistory"); // Clear chat history on logout
-    window.location.href = "index.html";
-  });
-
-  profileBtn.addEventListener("click", async () => {
-    try {
-      const res = await fetch(`${BASE_API_URL}/protected/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
->>>>>>> main
 
   // 프로필 모달
   if (profileBtn) {
@@ -643,12 +639,29 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("http://localhost:8000/protected/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
+  if (profileBtn) {
+    profileBtn.addEventListener("click", async () => {
+      try {
+        const res = await fetch(`${BASE_API_URL}/protected/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (!res.ok) throw new Error("사용자 정보를 불러올 수 없습니다.");
 
         const data = await res.json();
         const user = data.user;
 
+        profileDetails.innerHTML = `
+          <div class="info-group"><div class="label">아이디</div><div class="value">${user.user_id}</div></div>
+          <div class="info-group"><div class="label">성별</div><div class="value">${user.gender}</div></div>
+          <div class="info-group"><div class="label">나이</div><div class="value">${user.age}세</div></div>
+          <div class="info-group"><div class="label">키</div><div class="value">${user.height}cm</div></div>
+          <div class="info-group"><div class="label">몸무게</div><div class="value">${user.weight}kg</div></div>
+          <div class="divider"></div>
+          <div class="info-group"><div class="label">운동 수준</div><div class="value">${user.level}</div></div>
+          <div class="info-group"><div class="label">부상 부위</div><div class="value">${user.injury_part || "없음"}</div></div>
+          <div class="info-group"><div class="label">부상 수준</div><div class="value">${user.injury_level || "없음"}</div></div>
+        `;
         profileDetails.innerHTML = `
           <div class="info-group"><div class="label">아이디</div><div class="value">${user.user_id}</div></div>
           <div class="info-group"><div class="label">성별</div><div class="value">${user.gender}</div></div>
@@ -680,9 +693,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 =======
+        modal.classList.remove("hidden");
+      } catch (err) {
+        alert("내 정보를 불러오는 데 실패했습니다.");
+        console.error(err);
+      }
+    });
+  }
+
   closeModalBtn.addEventListener("click", () => modal.classList.add("hidden"));
   window.addEventListener("click", (e) => {
     if (e.target === modal) modal.classList.add("hidden");
   });
 });
->>>>>>> main
