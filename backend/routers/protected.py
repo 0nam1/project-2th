@@ -1,8 +1,8 @@
 # routers/protected.py
 
 from fastapi import APIRouter, Depends, HTTPException
-from ..dependencies import get_current_user
-from ..crud.user import get_user_by_id
+from dependencies import get_current_user
+from crud.user import get_user_by_id
 
 router = APIRouter(prefix="/protected", tags=["보호된 API"])
 

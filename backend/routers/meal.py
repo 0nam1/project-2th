@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from datetime import date
-from ..schemas.plan import DietPlan, DietPlanCreate
-from ..crud import meal as meal_crud
-from ..dependencies import get_current_user
+from schemas.plan import DietPlan, DietPlanCreate
+from crud import meal as meal_crud
+from dependencies import get_current_user
 
 router = APIRouter(prefix="/diet_plans", tags=["diet_plans"])
 

@@ -5,15 +5,15 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from typing import Dict, List, AsyncGenerator
 from datetime import date, timedelta
 
-from ..dependencies import get_current_user
-from ..utils.openai_client import chat_client, CHAT_DEPLOYMENT_NAME, ask_openai_unified, get_embedding, should_search_long_term_memory
-from ..utils.ollama_client import ask_ollama_stream
-from ..crud.chat import save_chat_history, retrieve_and_rerank_history
-from ..crud import plan as plan_crud
-from ..crud import meal as meal_crud
-from ..schemas.chat import ChatHistoryCreate
-from ..schemas.plan import WorkoutPlanCreate, DietPlanCreate
-from ..utils.youtube_search import search_youtube_videos
+from dependencies import get_current_user
+from utils.openai_client import chat_client, CHAT_DEPLOYMENT_NAME, ask_openai_unified, get_embedding, should_search_long_term_memory
+from utils.ollama_client import ask_ollama_stream
+from crud.chat import save_chat_history, retrieve_and_rerank_history
+from crud import plan as plan_crud
+from crud import meal as meal_crud
+from schemas.chat import ChatHistoryCreate
+from schemas.plan import WorkoutPlanCreate, DietPlanCreate
+from utils.youtube_search import search_youtube_videos
 
 router = APIRouter()
 

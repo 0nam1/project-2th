@@ -2,10 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict, Any
 from datetime import date
-from ..schemas.plan import WorkoutPlan, DietPlan # DietPlan 추가
-from ..crud import plan as plan_crud
-from ..crud import meal as meal_crud # meal_crud 추가
-from ..dependencies import get_current_user
+from schemas.plan import WorkoutPlan, DietPlan # DietPlan 추가
+from crud import plan as plan_crud
+from crud import meal as meal_crud # meal_crud 추가
+from dependencies import get_current_user
 
 router = APIRouter(prefix="/plans", tags=["plans"])
 

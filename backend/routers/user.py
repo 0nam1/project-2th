@@ -1,8 +1,8 @@
 # routers/user.py
 from fastapi import APIRouter, HTTPException
-from ..schemas.user import UserSignup, UserLogin
-from ..crud.user import verify_user, create_user
-from ..utils.jwt_handler import create_access_token
+from schemas.user import UserSignup, UserLogin
+from crud.user import verify_user, create_user
+from utils.jwt_handler import create_access_token
 
 router = APIRouter(prefix="/users")
 

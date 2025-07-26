@@ -15,9 +15,10 @@ from dotenv import load_dotenv
 router = APIRouter()
 
 # 환경 변수 로드
-basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '../.env'))
+# basedir = os.path.abspath(os.path.dirname(__file__))
+# load_dotenv(os.path.join(basedir, '../.env'))
 
+load_dotenv()
 tts_key = os.getenv("TTS_SUBSCRIPTION_KEY")
 tts_region = "eastus"   # 분리하려면 env 등에서 관리 추천
 api_version = "2024-04-01"

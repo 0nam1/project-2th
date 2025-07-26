@@ -1,5 +1,5 @@
-from ..database import database
-from ..schemas.plan import DietPlanCreate
+from database import database
+from schemas.plan import DietPlanCreate
 from datetime import date
 
 async def create_diet_plan(user_id: str, plan_date: date, meal_type: str, plan: DietPlanCreate):

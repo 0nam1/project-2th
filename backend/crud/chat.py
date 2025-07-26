@@ -1,8 +1,8 @@
 # crud/chat.py
 import json
 import numpy as np
-from ..database import database
-from ..schemas.chat import ChatHistoryCreate
+from database import database
+from schemas.chat import ChatHistoryCreate
 from sentence_transformers import CrossEncoder
 
 # Cross-Encoder 모델 로드 (애플리케이션 시작 시 한 번만 실행되도록)

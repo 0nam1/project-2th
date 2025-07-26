@@ -1,6 +1,6 @@
 # backend/crud/plan.py
-from ..database import database
-from ..schemas.plan import WorkoutPlanCreate
+from database import database
+from schemas.plan import WorkoutPlanCreate
 from datetime import date
 
 async def create_workout_plan(user_id: str, plan_date: date, plan: WorkoutPlanCreate):

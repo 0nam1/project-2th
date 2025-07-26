@@ -1,11 +1,20 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from .database import database
-from .routers import user, protected, chat, plan, meal, batch_tts  # ← user.py는 routers/ 폴더 안에 있어야 함
+from database import database
+from routers import user, protected, chat, plan, meal, batch_tts  # ← user.py는 routers/ 폴더 안에 있어야 함
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
+
+# frontend 폴더 경로 잡기 (main.py 기준으로 one-level up + frontend)
+FRONTEND_PATH = os.path.join(os.path.dirname(__file__), '..', 'frontend')
+
+from fastapi.responses import FileResponse
+@app.get("/debug-index")
+def debug_index():
+    return FileResponse(os.path.join(FRONTEND_PATH, "index.html"))
 
 # CORS 설정 추가
 app.add_middleware(
@@ -30,3 +39,7 @@ app.include_router(chat.router)
 app.include_router(plan.router)
 app.include_router(meal.router)
 app.include_router(batch_tts.router)
+
+# 정적 파일 마운트
+app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="static")
+
