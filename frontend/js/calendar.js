@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (workoutPlansForDate.length > 0) {
-            workoutPlanDetails.innerHTML = '<h3>Workout Plan</h3>';
+            workoutPlanDetails.innerHTML = '<h3>운동 루틴</h3>';
             workoutPlansForDate.forEach(plan => {
                 let statusIcon = '';
                 let statusText = '';
@@ -167,10 +167,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         statusIcon = '';
                         statusText = plan.status;
                 }
-                workoutPlanDetails.innerHTML += `<p>${statusIcon} ${plan.exercise_name} (${plan.sets} sets x ${plan.reps} reps)</p>`;
+                workoutPlanDetails.innerHTML += `<p>${statusIcon} ${plan.exercise_name} (${plan.sets} 세트 x ${plan.reps} 회)</p>`;
             });
         } else {
-            workoutPlanDetails.innerHTML = '<h3>Workout Plan</h3><p>No workout plan for this date.</p>';
+            workoutPlanDetails.innerHTML = '<h3>운동 루틴</h3><p>No workout plan for this date.</p>';
         }
 
         // Fetch and display meal plans for the selected date
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (dietPlansForDate.length > 0) {
-            mealPlanDetails.innerHTML = '<h3>Meal Plan</h3>';
+            mealPlanDetails.innerHTML = '<h3>식단</h3>';
 
             const mealTypes = {
                 '아침': [],
@@ -218,12 +218,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 statusIcon = '';
                                 statusText = plan.status;
                         }
-                        mealPlanDetails.innerHTML += `<p>${statusIcon} ${plan.food_name} (Calories: ${plan.calories || 'N/A'}, Protein: ${plan.protein_g || 'N/A'}g, Carbs: ${plan.carbs_g || 'N/A'}g, Fat: ${plan.fat_g || 'N/A'}g)</p>`;
+                        mealPlanDetails.innerHTML += `<p>${statusIcon} ${plan.food_name} (칼로리: ${plan.calories || 'N/A'}, 단백질: ${plan.protein_g || 'N/A'}g, 탄수화물: ${plan.carbs_g || 'N/A'}g, 지방: ${plan.fat_g || 'N/A'}g)</p>`;
                     });
                 }
             }
         } else {
-            mealPlanDetails.innerHTML = '<h3>Meal Plan</h3><p>No meal plan for this date.</p>';
+            mealPlanDetails.innerHTML = '<h3>식단</h3><p>No meal plan for this date.</p>';
         }
 
         detailViewContainer.classList.add('open'); // Slide in the detail view

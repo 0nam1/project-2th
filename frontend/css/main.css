@@ -527,13 +527,13 @@ body {
   margin-bottom: 26px;
 }
 .profile-label {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 400;
   color: #888;
   margin-bottom: 2px;
 }
 .profile-value {
-  font-size: 25px;
+  font-size: 22px;
   font-weight: 500;
   color: #222;
   margin-bottom: 0;
@@ -545,10 +545,10 @@ body {
 
 .profile-divider {
   position: absolute;
-  left: 10px;
-  right: 10px;
+  left: 32px;
+  right: 32px;
   width: auto;
-  height: 6.4px;
+  height: 2px;
   background: #e0e0e0;
   margin: 0 auto;
   border-radius: 6px;
