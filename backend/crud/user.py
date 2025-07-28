@@ -34,9 +34,10 @@ async def verify_user(user_id: str) -> bool:
 
 async def get_user_by_id(user_id: str) -> dict | None:
     query = """
-        SELECT user_id, gender, age, height, weight, level, injury_level, injury_part
-        FROM users
-        WHERE user_id = :user_id
+        SELECT u.user_id, u.gender, u.age, u.height, u.weight, u.level, tl.description as level_desc, u.injury_level, u.injury_part
+        FROM users u
+        JOIN training_levels tl ON u.level = tl.level
+        WHERE u.user_id = :user_id
     """
     result = await database.fetch_one(query=query, values={"user_id": user_id})
     return dict(result) if result else None

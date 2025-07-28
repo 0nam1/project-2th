@@ -72,9 +72,11 @@ async def should_search_long_term_memory(question: str, history: List[Dict]) -> 
         print(f"장기 기억 검색 여부 판단 오류: {e}")
         return True
 
-async def ask_openai_unified(user_message: str, image_bytes: bytes | None = None, recent_history: List[Dict] = [], rag_history: List[Dict] = []) -> str:
+async def ask_openai_unified(user_message: str, image_bytes: bytes | None = None, recent_history: List[Dict] = [], rag_history: List[Dict] = [], system_prompt: str | None = None) -> str:
     """단기 기억(recent_history)과 장기 기억(rag_history)을 모두 활용하여 답변을 생성합니다."""
-    system_prompt = f"""
+    # 시스템 프롬프트가 외부에서 주입되지 않으면 기본값을 사용합니다.
+    if system_prompt is None:
+        system_prompt = f"""
 '스포츠 지도사 1급' 책과 '헬스의 정석-근력운동'책을 학습해줘.
 너는 Gym PT를 도와주는 AI 챗봇이야. 사용자가 인바디 이미지를 업로드할 수 있으며, OCR 텍스트를 참고해서 정확한 분석을 제공해줘.
 [과거 검색 기록]이 주어질 경우, 날짜 정보를 참고하여 사용자의 질문에 답변해줘.

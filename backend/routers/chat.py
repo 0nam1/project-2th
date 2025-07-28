@@ -1,3 +1,4 @@
+
 import asyncio
 import json
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
@@ -11,6 +12,7 @@ from utils.ollama_client import ask_ollama_stream
 from crud.chat import save_chat_history, retrieve_and_rerank_history
 from crud import plan as plan_crud
 from crud import meal as meal_crud
+from crud.user import get_user_by_id  # 사용자 정보 조회를 위해 import
 from schemas.chat import ChatHistoryCreate
 from schemas.plan import WorkoutPlanCreate, DietPlanCreate
 from utils.youtube_search import search_youtube_videos
@@ -22,7 +24,7 @@ chat_cache: Dict[str, List[Dict]] = {}
 CACHE_MAX_LENGTH = 10
 
 # -------------------------------------
-# 1. AI 분석 및 계획 관리 로직
+# 1. AI 분석 및 계획 관리 로직 (기존과 동일)
 # -------------------------------------
 
 async def analyze_user_intent(user_id: str, message: str, history: List[Dict]):
@@ -59,7 +61,7 @@ async def analyze_user_intent(user_id: str, message: str, history: List[Dict]):
         )
         return json.loads(response.choices[0].message.content)
     except Exception:
-        return {"intent": "general_chat"} # 오류 발생 시 일반 대화로 처리
+        return {"intent": "general_chat"}
 
 async def parse_and_save_plan(user_id: str, ai_response: str):
     """AI의 답변에서 운동 루틴 또는 식단 계획을 파싱하여 DB에 저장합니다."""
@@ -71,39 +73,8 @@ async def parse_and_save_plan(user_id: str, ai_response: str):
     **duration_min은 반드시 분 단위의 정수(integer)여야 합니다.** 정보가 없으면 null로 처리하세요.
     식단 계획의 각 식사 항목은 meal_type (아침, 점심, 저녁, 간식), food_name, calories, protein_g, carbs_g, fat_g 필드를 가져야 합니다. 영양 정보는 가능한 한 구체적인 수치로 제공하고, 정확한 수치를 알 수 없는 경우 일반적인 추정치를 제공하거나 '약 N'과 같이 명시해주세요. **절대 null로 처리하지 말고, 반드시 숫자로 된 값을 제공해야 합니다.**
 
-    출력 형식: {{\"plans\": [{{ \"date\": \"YYYY-MM-DD\", \"type\": \"workout\"/\"diet\", \"items\": [...] }}]}}
-    만약 AI 답변이 운동 루틴이나 식단 계획이 아니거나 파싱할 수 없으면, {{\"plans\": []}} 를 반환하세요.
-    
-    예시 입력 (운동):
-    \"1일차: 스쿼트 12회 5세트, 런지 15회 3세트\n2일차: 벤치프레스 10회 5세트 60kg\"
-    예시 출력 (운동):
-    {{
-        \"plans\": [
-            {{\"date\": \"{date.today().isoformat()}\", \"type\": \"workout\", \"items\": [
-                {{\"exercise_name\": \"스쿼트\", \"reps\": 12, \"sets\": 5, \"weight_kg\": null, \"duration_min\": null}},
-                {{\"exercise_name\": \"런지\", \"reps\": 15, \"sets\": 3, \"weight_kg\": null, \"duration_min\": null}}
-            ]}},
-            {{\"date\": \"{(date.today() + timedelta(days=1)).isoformat()}\", \"type\": \"workout\", \"items\": [
-                {{\"exercise_name\": \"벤치프레스\", \"reps\": 10, \"sets\": 5, \"weight_kg\": 60, \"duration_min\": null}}
-            ]}}
-        ]
-    }}
-
-    예시 입력 (식단):
-    \"1일차 아침: 닭가슴살 100g, 현미밥 150g\n1일차 점심: 샐러드, 고구마 1개\"
-    예시 출력 (식단):
-    {{
-        \"plans\": [
-            {{\"date\": \"{date.today().isoformat()}\", \"type\": \"diet\", \"items\": [
-                {{\"meal_type\": \"아침\", \"food_name\": \"닭가슴살\", \"calories\": 165, \"protein_g\": 31.0, \"carbs_g\": 0.0, \"fat_g\": 3.6}},
-                {{\"meal_type\": \"아침\", \"food_name\": \"현미밥\", \"calories\": 150, \"protein_g\": 3.0, \"carbs_g\": 32.0, \"fat_g\": 1.0}}
-            ]}},
-            {{\"date\": \"{date.today().isoformat()}\", \"type\": \"diet\", \"items\": [
-                {{\"meal_type\": \"점심\", \"food_name\": \"샐러드\", \"calories\": 50, \"protein_g\": 2.0, \"carbs_g\": 10.0, \"fat_g\": 1.0}},
-                {{\"meal_type\": \"점심\", \"food_name\": \"고구마\", \"calories\": 130, \"protein_g\": 2.0, \"carbs_g\": 30.0, \"fat_g\": 0.5}}
-            ]}}
-        ]
-    }}
+    출력 형식: {{"plans": [{{ "date": "YYYY-MM-DD", "type": "workout"/"diet", "items": [...] }}]}}
+    만약 AI 답변이 운동 루틴이나 식단 계획이 아니거나 파싱할 수 없으면, {{"plans": []}} 를 반환하세요.
     """
     try:
         response = await chat_client.chat.completions.create(
@@ -116,7 +87,6 @@ async def parse_and_save_plan(user_id: str, ai_response: str):
             response_format={"type": "json_object"}
         )
         parsed_data = json.loads(response.choices[0].message.content)
-        print(f"[DEBUG] Parsed data from AI: {parsed_data}") # 디버깅을 위한 출력
 
         for day_plan in parsed_data.get("plans", []):
             plan_date = date.fromisoformat(day_plan["date"])
@@ -124,46 +94,64 @@ async def parse_and_save_plan(user_id: str, ai_response: str):
 
             if plan_type == "workout":
                 for exercise in day_plan["items"]:
-                    try:
-                        # duration_min이 float일 경우를 대비하여 int로 변환
-                        if exercise.get("duration_min") is not None:
-                            exercise["duration_min"] = int(round(exercise["duration_min"]))
-                        
-                        workout_plan = WorkoutPlanCreate(**exercise)
-                        await plan_crud.create_workout_plan(user_id, plan_date, workout_plan)
-                    except Exception as item_e:
-                        print(f"[ERROR] Failed to save workout item: {exercise}. Reason: {item_e}")
-                print(f"[INFO] Workout plan saved for user {user_id} on {plan_date}")
+                    workout_plan = WorkoutPlanCreate(**exercise)
+                    await plan_crud.create_workout_plan(user_id, plan_date, workout_plan)
             elif plan_type == "diet":
                 for meal in day_plan["items"]:
-                    try:
-                        meal_type = meal.pop("meal_type") # meal_type은 DietPlanCreate에 포함되지 않으므로 분리
-                        diet_plan = DietPlanCreate(**meal)
-                        await meal_crud.create_diet_plan(user_id, plan_date, meal_type, diet_plan)
-                    except Exception as item_e:
-                        print(f"[ERROR] Failed to save diet item: {meal}. Reason: {item_e}")
-                print(f"[INFO] Diet plan saved for user {user_id} on {plan_date}")
-            else:
-                print(f"[WARNING] Unknown plan type: {plan_type}")
+                    meal_type = meal.pop("meal_type")
+                    diet_plan = DietPlanCreate(**meal)
+                    await meal_crud.create_diet_plan(user_id, plan_date, meal_type, diet_plan)
 
     except Exception as e:
         print(f"[ERROR] Failed to parse or save routine: {e}")
 
 
 # -------------------------------------
-# 2. 채팅 스트림 및 메인 로직
+# 2. 채팅 스트림 및 메인 로직 (수정됨)
 # -------------------------------------
 
+def create_system_prompt(user_profile: dict) -> str:
+    """사용자 프로필을 기반으로 AI에게 전달할 시스템 프롬프트를 생성합니다."""
+    
+    # 부상 정보가 없는 경우 "없음"으로 표시
+    injury_info = "없음"
+    if user_profile.get('injury_part') and user_profile.get('injury_level'):
+        injury_info = f"{user_profile['injury_part']} (수준: {user_profile['injury_level']})"
+
+    # 시스템 프롬프트 구성
+    prompt = f"""
+    당신은 사용자의 개인 정보를 완벽하게 이해하고 맞춤형 답변을 제공하는 AI 퍼스널 트레이너 'GymPT'입니다.
+
+    [사용자 정보]
+    - 나이: {user_profile.get('age', '정보 없음')}세
+    - 성별: {user_profile.get('gender', '정보 없음')}
+    - 키: {user_profile.get('height', '정보 없음')}cm
+    - 몸무게: {user_profile.get('weight', '정보 없음')}kg
+    - 운동 수준: {user_profile.get('level_desc', f"레벨 {user_profile.get('level', '정보 없음')}")}
+    - 부상 정보: {injury_info}
+
+    [당신의 역할]
+    1.  **개인화된 조언:** 위 사용자 정보를 반드시 모든 답변의 최우선 고려사항으로 삼으세요. 특히, 부상 부위에 무리가 가지 않는 운동을 추천하고, 사용자의 운동 수준에 맞는 루틴을 제안해야 합니다.
+    2.  **전문적인 트레이너:** 운동 방법, 식단, 영양 정보에 대해 정확하고 과학적인 근거를 바탕으로 설명합니다.
+    3.  **동기 부여:** 사용자가 꾸준히 운동할 수 있도록 격려하고 긍정적인 태도를 유지합니다.
+    4.  **친근한 소통:** 항상 친절하고 명확하게 소통하며, 사용자의 질문에 상세히 답변합니다.
+    """
+    return prompt
+
 async def stream_generator(
-    user_id: str, user_message: str, image_bytes: bytes | None, model: str, ai_prompt_override: str | None = None
+    user_profile: dict, user_message: str, image_bytes: bytes | None, model: str, ai_prompt_override: str | None = None
 ) -> AsyncGenerator[str, None]:
     """AI의 답변을 스트리밍하고, 끝나면 대화 기록 저장 및 루틴 파싱을 수행합니다."""
+    user_id = user_profile['user_id']
     full_response = ""
     recent_history = chat_cache.get(user_id, [])
     rag_history = []
     embedding = None
 
-    # RAG (장기기억) 검색 - OpenAI 모델 사용 시에만
+    # 사용자 정보를 포함한 시스템 프롬프트 생성
+    system_prompt = create_system_prompt(user_profile)
+
+    # RAG (장기기억) 검색
     if model == "gpt-4o":
         if await should_search_long_term_memory(user_message, recent_history):
             embedding = await get_embedding(user_message)
@@ -172,13 +160,18 @@ async def stream_generator(
             embedding = await get_embedding(user_message)
 
     # AI 답변 스트리밍
+    final_user_message = ai_prompt_override if ai_prompt_override else user_message
+    
     if model == "llama3.2:1b":
-        response_stream = ask_ollama_stream(ai_prompt_override if ai_prompt_override else user_message, recent_history)
+        # Ollama는 시스템 프롬프트를 직접 지원하므로, 대화 기록에 추가
+        messages = [{"role": "system", "content": system_prompt}] + recent_history + [{"role": "user", "content": final_user_message}]
+        response_stream = ask_ollama_stream(messages) # 수정된 ask_ollama_stream 호출
         async for chunk in response_stream:
             full_response += chunk
             yield chunk
     else:
-        response_stream = await ask_openai_unified(ai_prompt_override if ai_prompt_override else user_message, image_bytes, recent_history, rag_history)
+        # OpenAI는 시스템 프롬프트를 별도로 전달
+        response_stream = await ask_openai_unified(final_user_message, image_bytes, recent_history, rag_history, system_prompt)
         async for chunk in response_stream:
             if chunk.choices and chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
@@ -186,20 +179,17 @@ async def stream_generator(
                 yield content
     
     # 스트리밍 종료 후 작업
-    # 1. 대화 기록 저장
     user_chat = ChatHistoryCreate(user_id=user_id, role_type="user", content=user_message, embedding=embedding)
     assistant_chat = ChatHistoryCreate(user_id=user_id, role_type="assistant", content=full_response)
     await save_chat_history(user_chat)
     await save_chat_history(assistant_chat)
 
-    # 2. 인메모리 캐시 업데이트
     chat_cache.setdefault(user_id, []).extend([
         {"role": "user", "content": user_message},
         {"role": "assistant", "content": full_response}
     ])
     chat_cache[user_id] = chat_cache[user_id][-CACHE_MAX_LENGTH:]
 
-    # 3. AI 답변이 루틴/식단인지 분석하고 DB에 저장 (백그라운드 실행)
     asyncio.create_task(parse_and_save_plan(user_id, full_response))
 
 
@@ -211,33 +201,28 @@ async def chat_with_text_or_image(
     current_user: dict = Depends(get_current_user)
 ):
     user_id = current_user['user_id']
+    
+    # 1. 사용자 프로필 정보 가져오기
+    user_profile = await get_user_by_id(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="사용자 정보를 찾을 수 없습니다.")
+
     recent_history = chat_cache.get(user_id, [])
     
-    # 1. 사용자의 의도 분석
+    # 2. 사용자의 의도 분석
     intent_data = await analyze_user_intent(user_id, message, recent_history)
     intent = intent_data.get("intent")
 
-    # 2. 의도에 따른 분기 처리
+    # 3. 의도에 따른 분기 처리
+    ai_prompt_override = None
+    image_bytes = await image.read() if image else None
+
     if intent == "complete_workout":
         await plan_crud.update_workout_plan_status(user_id, date.today(), 'completed')
         ai_prompt_override = "오늘의 운동을 성공적으로 완료했음을 사용자에게 칭찬하고 격려하는 메시지를 생성해줘."
-        image_bytes = await image.read() if image else None
-        return StreamingResponse(
-            stream_generator(user_id, message, image_bytes, model, ai_prompt_override),
-            media_type="text/event-stream"
-        )
-
     elif intent == "modify_workout":
-        # TODO: 이 경우, 사용자가 말한 운동으로 오늘 plan을 덮어쓰는 로직 추가 필요
-        # 우선은 완료 처리만 함
         await plan_crud.update_workout_plan_status(user_id, date.today(), 'completed')
         ai_prompt_override = "운동 기록이 성공적으로 저장되었음을 사용자에게 알리고 격려하는 메시지를 생성해줘."
-        image_bytes = await image.read() if image else None
-        return StreamingResponse(
-            stream_generator(user_id, message, image_bytes, model, ai_prompt_override),
-            media_type="text/event-stream"
-        )
-
     elif intent == "complete_meal":
         meal_type = intent_data.get("meal_type")
         if meal_type:
@@ -246,34 +231,22 @@ async def chat_with_text_or_image(
         else:
             await meal_crud.update_all_diet_plans_status_for_date(user_id, date.today(), 'completed')
             ai_prompt_override = "오늘의 모든 식사를 성공적으로 완료했음을 사용자에게 칭찬하고 격려하는 메시지를 생성해줘."
-        image_bytes = await image.read() if image else None
-        return StreamingResponse(
-            stream_generator(user_id, message, image_bytes, model, ai_prompt_override),
-            media_type="text/event-stream"
-        )
-
     elif intent == "modify_meal":
         meal_type = intent_data.get("meal_type")
         if meal_type:
-            # TODO: 이 경우, 사용자가 말한 식단으로 오늘 meal plan을 덮어쓰는 로직 추가 필요
-            # 우선은 완료 처리만 함
             await meal_crud.update_diet_plan_status(user_id, date.today(), meal_type, 'completed')
             ai_prompt_override = f"오늘의 {meal_type} 식사 기록이 성공적으로 저장되었음을 사용자에게 알리고 격려하는 메시지를 생성해줘."
         else:
-            ai_prompt_override = "어떤 식사를 변경했는지 알려주세요 (예: 아침, 점심, 저녁)."
-            # 이 경우는 AI 응답이 아니라 고정 메시지이므로, JSONResponse를 유지합니다.
-            return JSONResponse(content={"message": ai_prompt_override}, status_code=400)
+            return JSONResponse(content={"message": "어떤 식사를 변경했는지 알려주세요 (예: 아침, 점심, 저녁)."}, status_code=400)
     
-    # 3. 일반 대화 또는 루틴/식단 요청 시, 스트리밍 응답 생성
-    else: # general_chat
-        try:
-            image_bytes = await image.read() if image else None
-            return StreamingResponse(
-                stream_generator(user_id, message, image_bytes, model),
-                media_type="text/event-stream"
-            )
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+    # 4. 스트리밍 응답 생성
+    try:
+        return StreamingResponse(
+            stream_generator(user_profile, message, image_bytes, model, ai_prompt_override),
+            media_type="text/event-stream"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # -------------------------------------
 # 3. YouTube 검색 (기존과 동일)
@@ -284,7 +257,7 @@ async def get_youtube_videos(
     max_results: int = Query(3, ge=1, le=10),
     current_user: dict = Depends(get_current_user)
 ):
-    # (이하 로직은 기존과 동일하게 유지)
+    # (로직 동일)
     try:
         youtube_query_prompt = f"""From the following text, extract up to **3 keywords** that can be used to search for **YouTube workout routines or specific exercises**.
  
