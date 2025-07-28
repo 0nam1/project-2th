@@ -168,14 +168,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         statusText = plan.status;
                 }
                 let workoutDetails = [];
-                if (plan.sets !== null) workoutDetails.push(`${plan.sets} sets`);
-                if (plan.reps !== null) workoutDetails.push(`${plan.reps} reps`);
+                if (plan.sets !== null) workoutDetails.push(`${plan.sets} 세트`);
+                if (plan.reps !== null) workoutDetails.push(`${plan.reps} 회`);
                 
                 let workoutDetailString = workoutDetails.length > 0 ? ` (${workoutDetails.join(' x ')})` : '';
                 workoutPlanDetails.innerHTML += `<p>${statusIcon} ${plan.exercise_name}${workoutDetailString}</p>`;
             });
         } else {
-            workoutPlanDetails.innerHTML = '<h3>운동 루틴</h3><p>No workout plan for this date.</p>';
+            workoutPlanDetails.innerHTML = '<h3>운동 루틴</h3><p>이 날짜에는 운동 계획이 없습니다.</p>';
         }
 
         // Fetch and display meal plans for the selected date
@@ -224,10 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 statusText = plan.status;
                         }
                         let nutritionDetails = [];
-                        if (plan.calories !== null && plan.calories !== 'N/A') nutritionDetails.push(`Calories: ${plan.calories}`);
-                        if (plan.protein_g !== null && plan.protein_g !== 'N/A') nutritionDetails.push(`Protein: ${plan.protein_g}g`);
-                        if (plan.carbs_g !== null && plan.carbs_g !== 'N/A') nutritionDetails.push(`Carbs: ${plan.carbs_g}g`);
-                        if (plan.fat_g !== null && plan.fat_g !== 'N/A') nutritionDetails.push(`Fat: ${plan.fat_g}g`);
+                        if (plan.calories !== null && plan.calories !== 'N/A') nutritionDetails.push(`칼로리: ${plan.calories}`);
+                        if (plan.protein_g !== null && plan.protein_g !== 'N/A') nutritionDetails.push(`단백질: ${plan.protein_g}g`);
+                        if (plan.carbs_g !== null && plan.carbs_g !== 'N/A') nutritionDetails.push(`탄수화물: ${plan.carbs_g}g`);
+                        if (plan.fat_g !== null && plan.fat_g !== 'N/A') nutritionDetails.push(`지방: ${plan.fat_g}g`);
 
                         let nutritionDetailString = nutritionDetails.length > 0 ? ` (${nutritionDetails.join(', ')})` : '';
                         mealPlanDetails.innerHTML += `<p>${statusIcon} ${plan.food_name}${nutritionDetailString}</p>`;
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } else {
-            mealPlanDetails.innerHTML = '<h3>식단</h3><p>No meal plan for this date.</p>';
+            mealPlanDetails.innerHTML = '<h3>식단</h3><p>이 날짜에는 식단계획이 없습니다.</p>';
         }
 
         detailViewContainer.classList.add('open'); // Slide in the detail view
