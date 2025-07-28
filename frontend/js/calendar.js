@@ -167,7 +167,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         statusIcon = '';
                         statusText = plan.status;
                 }
-                workoutPlanDetails.innerHTML += `<p>${statusIcon} ${plan.exercise_name} (${plan.sets} 세트 x ${plan.reps} 회)</p>`;
+                let workoutDetails = [];
+                if (plan.sets !== null) workoutDetails.push(`${plan.sets} sets`);
+                if (plan.reps !== null) workoutDetails.push(`${plan.reps} reps`);
+                
+                let workoutDetailString = workoutDetails.length > 0 ? ` (${workoutDetails.join(' x ')})` : '';
+                workoutPlanDetails.innerHTML += `<p>${statusIcon} ${plan.exercise_name}${workoutDetailString}</p>`;
             });
         } else {
             workoutPlanDetails.innerHTML = '<h3>운동 루틴</h3><p>No workout plan for this date.</p>';
@@ -218,7 +223,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 statusIcon = '';
                                 statusText = plan.status;
                         }
-                        mealPlanDetails.innerHTML += `<p>${statusIcon} ${plan.food_name} (칼로리: ${plan.calories || 'N/A'}, 단백질: ${plan.protein_g || 'N/A'}g, 탄수화물: ${plan.carbs_g || 'N/A'}g, 지방: ${plan.fat_g || 'N/A'}g)</p>`;
+                        let nutritionDetails = [];
+                        if (plan.calories !== null && plan.calories !== 'N/A') nutritionDetails.push(`Calories: ${plan.calories}`);
+                        if (plan.protein_g !== null && plan.protein_g !== 'N/A') nutritionDetails.push(`Protein: ${plan.protein_g}g`);
+                        if (plan.carbs_g !== null && plan.carbs_g !== 'N/A') nutritionDetails.push(`Carbs: ${plan.carbs_g}g`);
+                        if (plan.fat_g !== null && plan.fat_g !== 'N/A') nutritionDetails.push(`Fat: ${plan.fat_g}g`);
+
+                        let nutritionDetailString = nutritionDetails.length > 0 ? ` (${nutritionDetails.join(', ')})` : '';
+                        mealPlanDetails.innerHTML += `<p>${statusIcon} ${plan.food_name}${nutritionDetailString}</p>`;
                     });
                 }
             }
