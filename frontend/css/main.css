@@ -558,3 +558,63 @@ body {
 .main-content {
   padding-left: 0 !important;
 }
+
+/* Play button for TTS */
+.play-button-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #fff; /* White background */
+  border: 1px solid #008080; /* Teal border */
+  border-radius: 20px; /* More rounded corners */
+  padding: 2px 10px; /* Adjusted padding for smaller, consistent box */
+  margin-bottom: 2px; /* Even closer to message bubble */
+  width: fit-content; /* Adjust width to content */
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.play-button-wrapper:hover {
+  background-color: #f0f8f8; /* Light teal background on hover */
+  border-color: #006666; /* Darker teal on hover */
+}
+
+.play-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #008080; /* Teal color for the play icon */
+  margin-right: 8px; /* Consistent space between icon and text */
+}
+
+.play-button svg {
+  width: 20px; /* Consistent icon size */
+  height: 20px; /* Consistent icon size */
+  fill: currentColor; /* Use parent's color */
+}
+
+.play-button-text {
+  font-size: 1em; /* Slightly larger font for text */
+  color: #008080; /* Changed text color to match button */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+/* Loading spinner for TTS */
+.loading-spinner {
+  border: 3px solid #f3f3f3; /* Light grey */
+  border-top: 3px solid #008080; /* Teal */
+  border-radius: 50%;
+  width: 20px; /* Consistent spinner size */
+  height: 20px; /* Consistent spinner size */
+  animation: spin 1s linear infinite;
+  margin-right: 8px; /* Consistent space between spinner and text */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
