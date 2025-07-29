@@ -317,14 +317,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     msgContainer.className = `message ${msg.sender}`;
                     chatBox.appendChild(msgContainer);
 
+                    appendMessage(msg.sender, msg.text, msg.videos || [], msgContainer);
+
+                    // 답변 박스 바깥, 바로 다음에 플레이 버튼을 추가합니다.
                     if (msg.sender === 'bot' && msg.audioKey) {
                         const audioBlob = await getAudio(msg.audioKey);
                         if (audioBlob) {
                             const playButtonWrapper = addPlayButton(msg.audioKey, false);
-                            msgContainer.parentNode.insertBefore(playButtonWrapper, msgContainer);
+                            msgContainer.insertAdjacentElement('afterend', playButtonWrapper);
                         }
                     }
-                    appendMessage(msg.sender, msg.text, msg.videos || [], msgContainer);
                 });
                 if (mainContent) mainContent.classList.add("chat-active");
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -382,10 +384,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const botMessageDiv = document.createElement("div");
         botMessageDiv.className = "message bot";
         chatBox.appendChild(botMessageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
+        
+        // TTS 로딩 스피너를 답변 박스 바깥, 바로 다음에 추가
         const ttsLoadingWrapper = addPlayButton(null, true);
-        botMessageDiv.parentNode.insertBefore(ttsLoadingWrapper, botMessageDiv);
+        botMessageDiv.insertAdjacentElement('afterend', ttsLoadingWrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
         let fullStreamBuffer = "";
         let youtubeVideos = [];
@@ -405,8 +408,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const { done, value } = await reader.read();
                     if (done) break;
                     let chunk = decoder.decode(value, { stream: true });
-                    botMessageDiv.textContent += chunk;
                     fullStreamBuffer += chunk;
+                    // 스트리밍 중에는 appendMessage를 직접 호출하지 않고, 마지막에 한 번만 호출
+                    botMessageDiv.innerText = fullStreamBuffer; // 임시로 텍스트만 업데이트
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }
                 
@@ -419,12 +423,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (videoData && videoData.length > 0) {
                             youtubeVideos = videoData;
                         }
-                    } else {
-                        console.error("Failed to fetch YouTube videos:", youtubeSearchRes.status, youtubeSearchRes.statusText);
                     }
                 } catch (youtubeErr) {
                     console.error("Error fetching YouTube videos:", youtubeErr);
                 }
+
+                // 스트리밍 완료 후, 최종 메시지 구조 다시 그림
+                appendMessage("bot", fullStreamBuffer, youtubeVideos, botMessageDiv);
 
                 try {
                     const ttsRes = await fetch(`${BASE_API_URL}/batch_tts`, {
@@ -441,18 +446,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         const newPlayButtonWrapper = addPlayButton(audioKey, false);
                         ttsLoadingWrapper.replaceWith(newPlayButtonWrapper);
 
-                        appendMessage("bot", fullStreamBuffer, youtubeVideos, botMessageDiv);
                         chatHistory.push({ sender: "bot", text: fullStreamBuffer, videos: youtubeVideos, audioKey: audioKey });
                     } else {
-                        console.error("Failed to fetch TTS audio:", ttsRes.status, ttsRes.statusText);
                         ttsLoadingWrapper.remove();
-                        appendMessage("bot", fullStreamBuffer, youtubeVideos, botMessageDiv);
                         chatHistory.push({ sender: "bot", text: fullStreamBuffer, videos: youtubeVideos });
                     }
                 } catch (ttsErr) {
-                    console.error("Error fetching TTS audio:", ttsErr);
                     ttsLoadingWrapper.remove();
-                    appendMessage("bot", fullStreamBuffer, youtubeVideos, botMessageDiv);
                     chatHistory.push({ sender: "bot", text: fullStreamBuffer, videos: youtubeVideos });
                 }
                 saveChatHistory();

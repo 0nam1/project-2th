@@ -70,10 +70,41 @@ async def parse_and_save_plan(user_id: str, ai_response: str):
 
     운동 계획의 각 운동 항목은 exercise_name, reps, sets, weight_kg, duration_min 필드를 가져야 합니다. 
     **duration_min은 반드시 분 단위의 정수(integer)여야 합니다.** 정보가 없으면 null로 처리하세요.
-    식단 계획의 각 식사 항목은 meal_type (아침, 점심, 저녁, 간식), food_name, calories, protein_g, carbs_g, fat_g 필드를 가져야 합니다. 영양 정보는 가능한 한 구체적인 수치로 제공하고, 정확한 수치를 알 수 없는 경우 일반적인 추정치를 제공하거나 '약 N'과 같이 명시해주세요. **절대 null로 처리하지 말고, 반드시 숫자로 된 값을 제공해야 합니다.**
+    식단 계획의 각 식사 항목은 meal_type (아침, 점심, 저녁, 간식), food_name, calories, protein_g, carbs_g, fat_g 필드를 가져야 합니다. 영양 정보는 가능한 한 구체적인 수치로 제공해주세요. **정보가 없는 필드는 null로 처리해도 좋습니다.**
 
     출력 형식: {{"plans": [{{ "date": "YYYY-MM-DD", "type": "workout"/"diet", "items": [...] }}]}}
     만약 AI 답변이 운동 루틴이나 식단 계획이 아니거나 파싱할 수 없으면, {{"plans": []}} 를 반환하세요.
+
+     예시 입력 (운동):
+    \"1일차: 스쿼트 12회 5세트, 런지 15회 3세트\n2일차: 벤치프레스 10회 5세트 60kg\"
+    예시 출력 (운동):
+    {{
+        \"plans\": [
+            {{\"date\": \"{date.today().isoformat()}\", \"type\": \"workout\", \"items\": [
+                {{\"exercise_name\": \"스쿼트\", \"reps\": 12, \"sets\": 5, \"weight_kg\": null, \"duration_min\": null}},
+                {{\"exercise_name\": \"런지\", \"reps\": 15, \"sets\": 3, \"weight_kg\": null, \"duration_min\": null}}
+            ]}},
+            {{\"date\": \"{(date.today() + timedelta(days=1)).isoformat()}\", \"type\": \"workout\", \"items\": [
+                {{\"exercise_name\": \"벤치프레스\", \"reps\": 10, \"sets\": 5, \"weight_kg\": 60, \"duration_min\": null}}
+            ]}}
+        ]
+    }}
+
+    예시 입력 (식단):
+    \"1일차 아침: 닭가슴살 100g, 현미밥 150g\n1일차 점심: 샐러드, 고구마 1개\"
+    예시 출력 (식단):
+    {{
+        \"plans\": [
+            {{\"date\": \"{date.today().isoformat()}\", \"type\": \"diet\", \"items\": [
+                {{\"meal_type\": \"아침\", \"food_name\": \"닭가슴살\", \"calories\": 165, \"protein_g\": 31.0, \"carbs_g\": 0.0, \"fat_g\": 3.6}},
+                {{\"meal_type\": \"아침\", \"food_name\": \"현미밥\", \"calories\": 150, \"protein_g\": 3.0, \"carbs_g\": 32.0, \"fat_g\": 1.0}}
+            ]}},
+            {{\"date\": \"{date.today().isoformat()}\", \"type\": \"diet\", \"items\": [
+                {{\"meal_type\": \"점심\", \"food_name\": \"샐러드\", \"calories\": 50, \"protein_g\": 2.0, \"carbs_g\": 10.0, \"fat_g\": 1.0}},
+                {{\"meal_type\": \"점심\", \"food_name\": \"고구마\", \"calories\": 130, \"protein_g\": 2.0, \"carbs_g\": 30.0, \"fat_g\": 0.5}}
+            ]}}
+        ]
+    }}
     """
     try:
         response = await chat_client.chat.completions.create(
